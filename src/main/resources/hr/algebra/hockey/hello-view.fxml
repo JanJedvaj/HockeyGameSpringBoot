@@ -1,16 +1,110 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.geometry.Insets?>
-<?import javafx.scene.control.Label?>
-<?import javafx.scene.layout.VBox?>
-
 <?import javafx.scene.control.Button?>
-<VBox alignment="CENTER" spacing="20.0" xmlns:fx="http://javafx.com/fxml"
-      fx:controller="hr.algebra.hockey.HelloController">
-    <padding>
-        <Insets bottom="20.0" left="20.0" right="20.0" top="20.0"/>
-    </padding>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Menu?>
+<?import javafx.scene.control.MenuBar?>
+<?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.control.SeparatorMenuItem?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.shape.Circle?>
+<?import javafx.scene.shape.Line?>
+<?import javafx.scene.shape.Rectangle?>
 
-    <Label fx:id="welcomeText"/>
-    <Button text="Hello!" onAction="#onHelloButtonClick"/>
-</VBox>
+<BorderPane prefHeight="760.0" prefWidth="1120.0" style="-fx-background-color: #d8edf4;" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="hr.algebra.hockey.HockeyGameController">
+    <top>
+        <VBox>
+            <MenuBar style="-fx-background-color: #123047; -fx-padding: 4 8 4 8;">
+                <Menu text="Game">
+                    <MenuItem onAction="#onNewGame" text="New Game" />
+                    <MenuItem onAction="#onSaveGame" text="Save Game" />
+                    <MenuItem onAction="#onLoadGame" text="Load Game" />
+                    <SeparatorMenuItem />
+                    <MenuItem onAction="#onReplay" text="Replay" />
+                </Menu>
+                <Menu text="Documentation">
+                    <MenuItem onAction="#onGenerateDocumentation" text="Generate Documentation" />
+                </Menu>
+            </MenuBar>
+            <HBox alignment="CENTER_LEFT" spacing="24.0" style="-fx-background-color: #f8fbfd; -fx-border-color: #b7ced9; -fx-border-width: 0 0 1 0;">
+                <padding>
+                    <Insets bottom="12.0" left="20.0" right="20.0" top="12.0" />
+                </padding>
+                <VBox spacing="2.0">
+                    <Label style="-fx-font-size: 11px; -fx-text-fill: #537082; -fx-font-weight: bold;" text="PLAYER" />
+                    <Label fx:id="playerScoreLabel" style="-fx-font-size: 28px; -fx-text-fill: #123047; -fx-font-weight: bold;" text="0" />
+                </VBox>
+                <VBox spacing="2.0">
+                    <Label style="-fx-font-size: 11px; -fx-text-fill: #537082; -fx-font-weight: bold;" text="OPPONENT" />
+                    <Label fx:id="opponentScoreLabel" style="-fx-font-size: 28px; -fx-text-fill: #123047; -fx-font-weight: bold;" text="0" />
+                </VBox>
+                <VBox spacing="2.0">
+                    <Label style="-fx-font-size: 11px; -fx-text-fill: #537082; -fx-font-weight: bold;" text="TIME" />
+                    <Label fx:id="timerLabel" style="-fx-font-size: 28px; -fx-text-fill: #a3262a; -fx-font-weight: bold;" text="02:00" />
+                </VBox>
+                <Region HBox.hgrow="ALWAYS" />
+                <Label fx:id="statusLabel" maxWidth="420.0" style="-fx-font-size: 15px; -fx-text-fill: #123047; -fx-font-weight: bold;" text="Ready - WASD moves Player 1, arrows move Player 2 in multiplayer." wrapText="true" />
+            </HBox>
+        </VBox>
+    </top>
+
+    <center>
+        <AnchorPane style="-fx-background-color: #d8edf4;">
+            <children>
+                <Pane fx:id="rinkPane" focusTraversable="true" layoutX="24.0" layoutY="24.0" prefHeight="620.0" prefWidth="760.0" style="-fx-background-color: #eefaff; -fx-border-color: #1d6386; -fx-border-width: 4; -fx-background-radius: 8; -fx-border-radius: 8;">
+                    <children>
+                        <Rectangle arcHeight="20.0" arcWidth="20.0" fill="#eefaff" height="596.0" layoutX="12.0" layoutY="12.0" stroke="#8bbdd0" strokeWidth="2.0" width="736.0" />
+                        <Line endX="380.0" endY="608.0" layoutX="0.0" layoutY="0.0" startX="380.0" startY="12.0" stroke="#c92632" strokeWidth="3.0" />
+                        <Circle fill="TRANSPARENT" layoutX="380.0" layoutY="310.0" radius="74.0" stroke="#c92632" strokeWidth="3.0" />
+                        <Circle fill="#c92632" layoutX="380.0" layoutY="310.0" radius="5.0" />
+                        <Line endX="140.0" endY="608.0" layoutX="0.0" layoutY="0.0" startX="140.0" startY="12.0" stroke="#246ea1" strokeWidth="3.0" />
+                        <Line endX="620.0" endY="608.0" layoutX="0.0" layoutY="0.0" startX="620.0" startY="12.0" stroke="#246ea1" strokeWidth="3.0" />
+                        <Rectangle arcHeight="10.0" arcWidth="10.0" fill="#f2f7fb" height="150.0" layoutX="16.0" layoutY="235.0" stroke="#a3262a" strokeWidth="3.0" width="42.0" />
+                        <Rectangle arcHeight="10.0" arcWidth="10.0" fill="#f2f7fb" height="150.0" layoutX="702.0" layoutY="235.0" stroke="#a3262a" strokeWidth="3.0" width="42.0" />
+                        <Circle fill="TRANSPARENT" layoutX="112.0" layoutY="165.0" radius="46.0" stroke="#246ea1" strokeWidth="2.0" />
+                        <Circle fill="TRANSPARENT" layoutX="112.0" layoutY="455.0" radius="46.0" stroke="#246ea1" strokeWidth="2.0" />
+                        <Circle fill="TRANSPARENT" layoutX="648.0" layoutY="165.0" radius="46.0" stroke="#246ea1" strokeWidth="2.0" />
+                        <Circle fill="TRANSPARENT" layoutX="648.0" layoutY="455.0" radius="46.0" stroke="#246ea1" strokeWidth="2.0" />
+                        <Rectangle fx:id="playerPaddle" arcHeight="10.0" arcWidth="10.0" fill="#1f77b4" height="88.0" layoutX="96.0" layoutY="266.0" stroke="#0f344d" strokeWidth="2.0" width="24.0" />
+                        <Rectangle fx:id="opponentPaddle" arcHeight="10.0" arcWidth="10.0" fill="#d94b42" height="88.0" layoutX="640.0" layoutY="266.0" stroke="#64211d" strokeWidth="2.0" width="24.0" />
+                        <Circle fx:id="puckCircle" fill="#1d2329" layoutX="380.0" layoutY="310.0" radius="12.0" stroke="#f8fbfd" strokeWidth="2.0" />
+                    </children>
+                </Pane>
+            </children>
+        </AnchorPane>
+    </center>
+
+    <right>
+        <VBox prefWidth="300.0" spacing="14.0" style="-fx-background-color: #f8fbfd; -fx-border-color: #b7ced9; -fx-border-width: 0 0 0 1;">
+            <padding>
+                <Insets bottom="18.0" left="18.0" right="18.0" top="18.0" />
+            </padding>
+            <VBox spacing="6.0">
+                <Label style="-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: #123047;" text="Controls" />
+                <Label style="-fx-font-size: 13px; -fx-text-fill: #334955;" text="Player 1: WASD" />
+                <Label style="-fx-font-size: 13px; -fx-text-fill: #334955;" text="Player 2: Arrow keys" />
+                <Label style="-fx-font-size: 13px; -fx-text-fill: #334955;" text="Single player opponent: simple patrol" wrapText="true" />
+            </VBox>
+            <HBox spacing="8.0">
+                <Button fx:id="startButton" maxWidth="Infinity" onAction="#onStartGame" style="-fx-background-color: #1f77b4; -fx-text-fill: white; -fx-font-weight: bold;" text="Start" HBox.hgrow="ALWAYS" />
+                <Button fx:id="pauseButton" maxWidth="Infinity" onAction="#onPauseGame" style="-fx-background-color: #e5edf1; -fx-text-fill: #123047; -fx-font-weight: bold;" text="Pause" HBox.hgrow="ALWAYS" />
+            </HBox>
+            <VBox spacing="8.0" VBox.vgrow="ALWAYS">
+                <Label style="-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: #123047;" text="Chat" />
+                <TextArea fx:id="chatTextArea" editable="false" prefHeight="260.0" promptText="Multiplayer chat messages will appear here." wrapText="true" VBox.vgrow="ALWAYS" />
+                <HBox spacing="8.0">
+                    <TextField fx:id="chatInputField" promptText="Message..." HBox.hgrow="ALWAYS" />
+                    <Button fx:id="sendChatButton" onAction="#onSendChatMessage" text="Send" />
+                </HBox>
+            </VBox>
+        </VBox>
+    </right>
+</BorderPane>
