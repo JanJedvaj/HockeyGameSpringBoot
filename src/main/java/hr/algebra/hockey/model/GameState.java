@@ -18,8 +18,8 @@ public class GameState implements Serializable {
     private GameStatus gameStatus;
 
     public GameState() {
-        playerOne = new Player(PlayerType.PLAYER_1, 120, 310, 18, 8);
-        playerTwo = new Player(PlayerType.PLAYER_2, 640, 310, 18, 8);
+        playerOne = new Player(PlayerType.PLAYER_1, 120, 310, 24, 8);
+        playerTwo = new Player(PlayerType.PLAYER_2, 640, 310, 24, 8);
         puck = new Puck(380, 310, 12);
         timeLeft = 120;
         winningScore = 5;

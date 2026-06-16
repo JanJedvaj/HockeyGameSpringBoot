@@ -1,0 +1,10 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="PLAYER_2" type="Application" factoryName="Application">
+    <option name="MAIN_CLASS_NAME" value="hr.algebra.hockey.Launcher" />
+    <module name="hockey" />
+    <option name="PROGRAM_PARAMETERS" value="" />
+    <method v="2">
+      <option name="Make" enabled="true" />
+    </method>
+  </configuration>
+</component>

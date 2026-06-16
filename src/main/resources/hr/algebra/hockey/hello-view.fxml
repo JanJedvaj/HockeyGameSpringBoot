@@ -19,7 +19,7 @@
 <?import javafx.scene.shape.Line?>
 <?import javafx.scene.shape.Rectangle?>
 
-<BorderPane prefHeight="760.0" prefWidth="1120.0" style="-fx-background-color: #d8edf4;" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="hr.algebra.hockey.HockeyGameController">
+<BorderPane prefHeight="760.0" prefWidth="1120.0" style="-fx-background-color: #d8edf4;" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="hr.algebra.hockey.controller.HockeyGameController">
     <top>
         <VBox>
             <MenuBar style="-fx-background-color: #123047; -fx-padding: 4 8 4 8;">
@@ -51,7 +51,7 @@
                     <Label fx:id="timerLabel" style="-fx-font-size: 28px; -fx-text-fill: #a3262a; -fx-font-weight: bold;" text="02:00" />
                 </VBox>
                 <Region HBox.hgrow="ALWAYS" />
-                <Label fx:id="statusLabel" maxWidth="420.0" style="-fx-font-size: 15px; -fx-text-fill: #123047; -fx-font-weight: bold;" text="Ready - WASD moves Player 1, arrows move Player 2 in multiplayer." wrapText="true" />
+                <Label fx:id="statusLabel" maxWidth="420.0" style="-fx-font-size: 15px; -fx-text-fill: #123047; -fx-font-weight: bold;" text="Ready - rotating arrow aims, press P to launch." wrapText="true" />
             </HBox>
         </VBox>
     </top>
@@ -73,8 +73,8 @@
                         <Circle fill="TRANSPARENT" layoutX="112.0" layoutY="455.0" radius="46.0" stroke="#246ea1" strokeWidth="2.0" />
                         <Circle fill="TRANSPARENT" layoutX="648.0" layoutY="165.0" radius="46.0" stroke="#246ea1" strokeWidth="2.0" />
                         <Circle fill="TRANSPARENT" layoutX="648.0" layoutY="455.0" radius="46.0" stroke="#246ea1" strokeWidth="2.0" />
-                        <Rectangle fx:id="playerPaddle" arcHeight="10.0" arcWidth="10.0" fill="#1f77b4" height="88.0" layoutX="96.0" layoutY="266.0" stroke="#0f344d" strokeWidth="2.0" width="24.0" />
-                        <Rectangle fx:id="opponentPaddle" arcHeight="10.0" arcWidth="10.0" fill="#d94b42" height="88.0" layoutX="640.0" layoutY="266.0" stroke="#64211d" strokeWidth="2.0" width="24.0" />
+                        <Circle fx:id="playerPaddle" fill="#1f77b4" layoutX="120.0" layoutY="310.0" radius="24.0" stroke="#0f344d" strokeWidth="4.0" />
+                        <Circle fx:id="opponentPaddle" fill="#d94b42" layoutX="640.0" layoutY="310.0" radius="24.0" stroke="#64211d" strokeWidth="4.0" />
                         <Circle fx:id="puckCircle" fill="#1d2329" layoutX="380.0" layoutY="310.0" radius="12.0" stroke="#f8fbfd" strokeWidth="2.0" />
                     </children>
                 </Pane>
@@ -89,9 +89,9 @@
             </padding>
             <VBox spacing="6.0">
                 <Label style="-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: #123047;" text="Controls" />
-                <Label style="-fx-font-size: 13px; -fx-text-fill: #334955;" text="Player 1: WASD" />
-                <Label style="-fx-font-size: 13px; -fx-text-fill: #334955;" text="Player 2: Arrow keys" />
-                <Label style="-fx-font-size: 13px; -fx-text-fill: #334955;" text="Single player opponent: simple patrol" wrapText="true" />
+                <Label style="-fx-font-size: 13px; -fx-text-fill: #334955;" text="Aim arrow rotates automatically" />
+                <Label style="-fx-font-size: 13px; -fx-text-fill: #334955;" text="Press P to launch active player" />
+                <Label style="-fx-font-size: 13px; -fx-text-fill: #334955;" text="Single player: left player shoots only" wrapText="true" />
             </VBox>
             <HBox spacing="8.0">
                 <Button fx:id="startButton" maxWidth="Infinity" onAction="#onStartGame" style="-fx-background-color: #1f77b4; -fx-text-fill: white; -fx-font-weight: bold;" text="Start" HBox.hgrow="ALWAYS" />
