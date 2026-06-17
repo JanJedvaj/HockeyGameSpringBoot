@@ -253,13 +253,31 @@ public class HockeyGameController {
         }
 
         switch (gameState.getGameStatus()) {
-            case READY, RUNNING -> statusLabel.setText(modeName + " - " + activePlayerName + " aiming. Press P to launch. Opponent patrols vertically.");
+            case READY, RUNNING -> {
+                if (gameState.getLastScoringPlayer() != null) {
+                    statusLabel.setText(playerName(gameState.getLastScoringPlayer()) + " scored! " + modeName
+                            + " - " + activePlayerName + " aiming. Press P to launch.");
+                } else {
+                    statusLabel.setText(modeName + " - " + activePlayerName + " aiming. Press P to launch. Opponent patrols vertically.");
+                }
+            }
             case LAUNCHING, PUCK_MOVING -> statusLabel.setText(activePlayerName + " launched. Waiting for movement to settle...");
             case PAUSED -> statusLabel.setText("Paused - press Start to continue.");
-            case FINISHED -> statusLabel.setText("Game finished.");
+            case FINISHED -> statusLabel.setText(playerName(gameState.getWinner()) + " wins! Final score "
+                    + gameState.getPlayerOne().getScore() + " - " + gameState.getPlayerTwo().getScore() + ".");
             case REPLAYING -> statusLabel.setText("Replay in progress.");
             case TURN_SWITCHING -> statusLabel.setText("Switching turns...");
         }
+    }
+
+    private String playerName(PlayerType playerType) {
+        if (playerType == PlayerType.PLAYER_1) {
+            return "Player 1";
+        }
+        if (engine.getGameState().getLocalPlayerType() == PlayerType.SINGLE_PLAYER) {
+            return "Opponent";
+        }
+        return "Player 2";
     }
 
     private String formatTime(int totalSeconds) {

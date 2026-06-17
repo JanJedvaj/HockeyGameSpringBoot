@@ -15,6 +15,8 @@ public class GameState implements Serializable {
     private double aimAngleRadians;
     private PlayerType activePlayer;
     private PlayerType localPlayerType;
+    private PlayerType lastScoringPlayer;
+    private PlayerType winner;
     private GameStatus gameStatus;
 
     public GameState() {
@@ -93,6 +95,22 @@ public class GameState implements Serializable {
         this.localPlayerType = localPlayerType;
     }
 
+    public PlayerType getLastScoringPlayer() {
+        return lastScoringPlayer;
+    }
+
+    public void setLastScoringPlayer(PlayerType lastScoringPlayer) {
+        this.lastScoringPlayer = lastScoringPlayer;
+    }
+
+    public PlayerType getWinner() {
+        return winner;
+    }
+
+    public void setWinner(PlayerType winner) {
+        this.winner = winner;
+    }
+
     public GameStatus getGameStatus() {
         return gameStatus;
     }
@@ -119,7 +137,7 @@ public class GameState implements Serializable {
         return playerOne.getScore() >= winningScore || playerTwo.getScore() >= winningScore;
     }
 
-    public PlayerType getWinner() {
+    public PlayerType calculateWinner() {
         if (playerOne.getScore() >= winningScore) {
             return PlayerType.PLAYER_1;
         }
@@ -138,6 +156,16 @@ public class GameState implements Serializable {
         timeLeft = 120;
         aimAngleRadians = 0;
         activePlayer = PlayerType.PLAYER_1;
+        lastScoringPlayer = null;
+        winner = null;
         gameStatus = GameStatus.READY;
+    }
+
+    public void resetPositionsAfterGoal() {
+        playerOne.reset(120, 310);
+        playerTwo.reset(640, 310);
+        puck.reset(380, 310);
+        aimAngleRadians = 0;
+        activePlayer = PlayerType.PLAYER_1;
     }
 }

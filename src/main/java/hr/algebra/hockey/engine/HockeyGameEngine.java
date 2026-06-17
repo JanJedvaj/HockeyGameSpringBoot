@@ -16,6 +16,8 @@ public class HockeyGameEngine {
     private static final double RINK_MIN_Y = 12;
     private static final double RINK_MAX_X = 748;
     private static final double RINK_MAX_Y = 608;
+    private static final double GOAL_MIN_Y = 235;
+    private static final double GOAL_MAX_Y = 385;
 
     private final GameState gameState;
     private int singlePlayerOpponentDirection = 1;
@@ -83,6 +85,7 @@ public class HockeyGameEngine {
             gameState.setActivePlayer(PlayerType.PLAYER_1);
         }
 
+        gameState.setLastScoringPlayer(null);
         Player activePlayer = gameState.getActivePlayerModel();
         activePlayer.launch(gameState.getAimAngleRadians());
         gameState.setGameStatus(GameStatus.LAUNCHING);
@@ -109,6 +112,11 @@ public class HockeyGameEngine {
 
         handlePlayerPuckImpact(playerOne, puck);
         handlePlayerPuckImpact(playerTwo, puck);
+
+        if (handleGoalIfScored(puck)) {
+            return;
+        }
+
         bouncePuckFromWalls(puck);
 
         CollisionService.applyFriction(playerOne, PLAYER_FRICTION);
@@ -173,6 +181,44 @@ public class HockeyGameEngine {
 
         opponent.setY(nextY);
         opponent.stop();
+    }
+
+    private boolean handleGoalIfScored(Puck puck) {
+        if (puck.getY() < GOAL_MIN_Y || puck.getY() > GOAL_MAX_Y) {
+            return false;
+        }
+
+        if (puck.getX() - puck.getRadius() <= RINK_MIN_X) {
+            scoreFor(PlayerType.PLAYER_2);
+            return true;
+        }
+
+        if (puck.getX() + puck.getRadius() >= RINK_MAX_X) {
+            scoreFor(PlayerType.PLAYER_1);
+            return true;
+        }
+
+        return false;
+    }
+
+    private void scoreFor(PlayerType scoringPlayer) {
+        Player scorer = scoringPlayer == PlayerType.PLAYER_1 ? gameState.getPlayerOne() : gameState.getPlayerTwo();
+        scorer.setScore(scorer.getScore() + 1);
+        gameState.setLastScoringPlayer(scoringPlayer);
+
+        PlayerType winner = gameState.calculateWinner();
+        if (winner != null) {
+            gameState.setWinner(winner);
+            gameState.setGameStatus(GameStatus.FINISHED);
+            gameState.getPlayerOne().stop();
+            gameState.getPlayerTwo().stop();
+            gameState.getPuck().stop();
+            return;
+        }
+
+        gameState.resetPositionsAfterGoal();
+        prepareModeDefaults();
+        gameState.setGameStatus(GameStatus.READY);
     }
 
     private boolean isTurnMovementSettled() {
