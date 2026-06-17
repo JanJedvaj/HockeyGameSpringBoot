@@ -1,0 +1,14 @@
+<!ELEMENT GameMoves (HockeyMove*)>
+<!ELEMENT HockeyMove (MoveType, PlayerType, Timestamp, PlayerOneScore, PlayerTwoScore, PlayerOneX, PlayerOneY, PlayerTwoX, PlayerTwoY, PuckX, PuckY, TimeLeft)>
+<!ELEMENT MoveType (#PCDATA)>
+<!ELEMENT PlayerType (#PCDATA)>
+<!ELEMENT Timestamp (#PCDATA)>
+<!ELEMENT PlayerOneScore (#PCDATA)>
+<!ELEMENT PlayerTwoScore (#PCDATA)>
+<!ELEMENT PlayerOneX (#PCDATA)>
+<!ELEMENT PlayerOneY (#PCDATA)>
+<!ELEMENT PlayerTwoX (#PCDATA)>
+<!ELEMENT PlayerTwoY (#PCDATA)>
+<!ELEMENT PuckX (#PCDATA)>
+<!ELEMENT PuckY (#PCDATA)>
+<!ELEMENT TimeLeft (#PCDATA)>

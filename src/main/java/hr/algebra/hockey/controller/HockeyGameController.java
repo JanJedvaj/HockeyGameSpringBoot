@@ -4,11 +4,17 @@ import hr.algebra.hockey.HockeyGameApplication;
 import hr.algebra.hockey.engine.HockeyGameEngine;
 import hr.algebra.hockey.model.GameState;
 import hr.algebra.hockey.model.GameStatus;
+import hr.algebra.hockey.model.HockeyMove;
+import hr.algebra.hockey.model.HockeyMoveType;
 import hr.algebra.hockey.model.Player;
 import hr.algebra.hockey.model.PlayerType;
 import hr.algebra.hockey.model.Puck;
+import hr.algebra.hockey.utils.DocumentationUtils;
 import hr.algebra.hockey.utils.GameSaveUtils;
+import hr.algebra.hockey.utils.XmlUtils;
 import javafx.animation.AnimationTimer;
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
@@ -22,6 +28,10 @@ import javafx.scene.shape.Circle;
 import javafx.scene.shape.Line;
 import javafx.scene.shape.Polygon;
 import javafx.scene.shape.StrokeLineCap;
+import javafx.util.Duration;
+
+import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class HockeyGameController {
     private static final double AIM_ARROW_LENGTH = 54;
@@ -50,6 +60,7 @@ public class HockeyGameController {
     private final Line aimArrowLine = new Line();
     private final Polygon aimArrowHead = new Polygon();
     private AnimationTimer gameLoop;
+    private Timeline replayTimeline;
     private boolean gameLoopRunning;
     private long lastTimerTick;
 
@@ -65,6 +76,8 @@ public class HockeyGameController {
     @FXML
     private void onNewGame(ActionEvent event) {
         engine.startNewGame();
+        resetMoveHistory();
+        saveMoveEvent(new HockeyMove(HockeyMoveType.GAME_START, engine.getGameState().getActivePlayer(), engine.getGameState()));
         lastTimerTick = 0;
         drawGameState();
         updateStatusLabel();
@@ -101,12 +114,17 @@ public class HockeyGameController {
 
     @FXML
     private void onReplay(ActionEvent event) {
-        statusLabel.setText("Replay will be implemented after XML move history.");
+        startReplay();
     }
 
     @FXML
     private void onGenerateDocumentation(ActionEvent event) {
-        statusLabel.setText("Reflection documentation will be implemented in a later MVP.");
+        try {
+            statusLabel.setText("Documentation generated: " + DocumentationUtils.generateDocumentation());
+            rinkPane.requestFocus();
+        } catch (Exception exception) {
+            statusLabel.setText("Documentation failed: " + exception.getMessage());
+        }
     }
 
     @FXML
@@ -133,6 +151,96 @@ public class HockeyGameController {
         }
         chatTextArea.appendText("Me: " + message + System.lineSeparator());
         chatInputField.clear();
+    }
+
+    private void resetMoveHistory() {
+        try {
+            XmlUtils.resetMoveHistory();
+        } catch (Exception exception) {
+            statusLabel.setText("XML reset failed: " + exception.getMessage());
+        }
+    }
+
+    private void savePendingMoveEvents() {
+        for (HockeyMove hockeyMove : engine.drainMoveEvents()) {
+            saveMoveEvent(hockeyMove);
+        }
+    }
+
+    private void saveMoveEvent(HockeyMove hockeyMove) {
+        try {
+            XmlUtils.saveMove(hockeyMove);
+        } catch (Exception exception) {
+            statusLabel.setText("XML save failed: " + exception.getMessage());
+        }
+    }
+
+    private void startReplay() {
+        try {
+            List<HockeyMove> hockeyMoves = XmlUtils.loadMoves();
+            if (hockeyMoves.isEmpty()) {
+                statusLabel.setText("No XML move history available for replay.");
+                return;
+            }
+
+            stopGameLoop();
+            if (replayTimeline != null) {
+                replayTimeline.stop();
+            }
+
+            GameStatus statusBeforeReplay = engine.getGameState().getGameStatus();
+            engine.getGameState().setGameStatus(GameStatus.REPLAYING);
+            setControlsDisabledForReplay(true);
+            aimArrowLine.setVisible(false);
+            aimArrowHead.setVisible(false);
+
+            AtomicInteger index = new AtomicInteger(0);
+            replayTimeline = new Timeline(new KeyFrame(Duration.seconds(0.9), actionEvent -> {
+                HockeyMove hockeyMove = hockeyMoves.get(index.getAndIncrement());
+                drawReplayMove(hockeyMove);
+                statusLabel.setText("Replay " + index.get() + "/" + hockeyMoves.size()
+                        + " - " + hockeyMove.getMoveType() + " by " + playerName(hockeyMove.getPlayerType()));
+            }));
+            replayTimeline.setCycleCount(hockeyMoves.size());
+            replayTimeline.setOnFinished(actionEvent -> {
+                engine.getGameState().setGameStatus(statusBeforeReplay);
+                setControlsDisabledForReplay(false);
+                drawGameState();
+                updateStatusLabel();
+                rinkPane.requestFocus();
+            });
+            replayTimeline.play();
+        } catch (Exception exception) {
+            engine.getGameState().setGameStatus(GameStatus.READY);
+            setControlsDisabledForReplay(false);
+            statusLabel.setText("Replay failed: " + exception.getMessage());
+        }
+    }
+
+    private void drawReplayMove(HockeyMove hockeyMove) {
+        playerPaddle.setLayoutX(hockeyMove.getPlayerOneX());
+        playerPaddle.setLayoutY(hockeyMove.getPlayerOneY());
+        opponentPaddle.setLayoutX(hockeyMove.getPlayerTwoX());
+        opponentPaddle.setLayoutY(hockeyMove.getPlayerTwoY());
+        puckCircle.setLayoutX(hockeyMove.getPuckX());
+        puckCircle.setLayoutY(hockeyMove.getPuckY());
+        playerScoreLabel.setText(String.valueOf(hockeyMove.getPlayerOneScore()));
+        opponentScoreLabel.setText(String.valueOf(hockeyMove.getPlayerTwoScore()));
+        timerLabel.setText(formatTime(hockeyMove.getTimeLeft()));
+    }
+
+    private void setControlsDisabledForReplay(boolean disabled) {
+        startButton.setDisable(disabled);
+        pauseButton.setDisable(disabled);
+        sendChatButton.setDisable(disabled);
+        chatInputField.setDisable(disabled);
+    }
+
+    private void stopGameLoop() {
+        if (gameLoop != null && gameLoopRunning) {
+            gameLoop.stop();
+            gameLoopRunning = false;
+        }
     }
 
     private void configureAimArrow() {
@@ -169,6 +277,7 @@ public class HockeyGameController {
 
                 updateTimer(now);
                 engine.updateFrame();
+                savePendingMoveEvents();
                 clampGameObjects();
                 drawGameState();
                 updateStatusLabel();
@@ -191,6 +300,7 @@ public class HockeyGameController {
 
         if (now - lastTimerTick >= 1_000_000_000L) {
             engine.tickTimer();
+            savePendingMoveEvents();
             lastTimerTick = now;
         }
     }
@@ -203,6 +313,7 @@ public class HockeyGameController {
 
         startGameLoop();
         engine.launchActivePlayer();
+        savePendingMoveEvents();
         drawGameState();
         updateStatusLabel();
     }

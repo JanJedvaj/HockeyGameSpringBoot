@@ -2,9 +2,14 @@ package hr.algebra.hockey.engine;
 
 import hr.algebra.hockey.model.GameState;
 import hr.algebra.hockey.model.GameStatus;
+import hr.algebra.hockey.model.HockeyMove;
+import hr.algebra.hockey.model.HockeyMoveType;
 import hr.algebra.hockey.model.Player;
 import hr.algebra.hockey.model.PlayerType;
 import hr.algebra.hockey.model.Puck;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class HockeyGameEngine {
     private static final double FULL_CIRCLE_RADIANS = Math.PI * 2;
@@ -20,6 +25,7 @@ public class HockeyGameEngine {
     private static final double GOAL_MAX_Y = 385;
 
     private final GameState gameState;
+    private final List<HockeyMove> pendingMoveEvents = new ArrayList<>();
     private int singlePlayerOpponentDirection = 1;
 
     public HockeyGameEngine() {
@@ -41,6 +47,12 @@ public class HockeyGameEngine {
         return gameState;
     }
 
+    public List<HockeyMove> drainMoveEvents() {
+        List<HockeyMove> moveEvents = new ArrayList<>(pendingMoveEvents);
+        pendingMoveEvents.clear();
+        return moveEvents;
+    }
+
     public void loadGameState(GameState loadedGameState) {
         PlayerType currentLocalPlayerType = gameState.getLocalPlayerType();
         gameState.copyFrom(loadedGameState);
@@ -49,6 +61,7 @@ public class HockeyGameEngine {
                 || gameState.getGameStatus() == GameStatus.REPLAYING) {
             gameState.setGameStatus(GameStatus.READY);
         }
+        pendingMoveEvents.clear();
         prepareModeDefaults();
     }
 
@@ -56,6 +69,7 @@ public class HockeyGameEngine {
         PlayerType localPlayerType = gameState.getLocalPlayerType();
         gameState.resetForNewGame();
         gameState.setLocalPlayerType(localPlayerType);
+        pendingMoveEvents.clear();
         prepareModeDefaults();
         singlePlayerOpponentDirection = 1;
         gameState.setGameStatus(GameStatus.READY);
@@ -70,12 +84,14 @@ public class HockeyGameEngine {
 
         if (gameState.getTimeLeft() <= 0) {
             finishGameByTimer();
+            addMoveEvent(HockeyMoveType.GAME_OVER, gameState.getWinner());
             return;
         }
 
         gameState.setTimeLeft(gameState.getTimeLeft() - 1);
         if (gameState.getTimeLeft() <= 0) {
             finishGameByTimer();
+            addMoveEvent(HockeyMoveType.GAME_OVER, gameState.getWinner());
         }
     }
 
@@ -127,6 +143,7 @@ public class HockeyGameEngine {
         Player activePlayer = gameState.getActivePlayerModel();
         activePlayer.launch(gameState.getAimAngleRadians());
         gameState.setGameStatus(GameStatus.LAUNCHING);
+        addMoveEvent(HockeyMoveType.LAUNCH, gameState.getActivePlayer());
     }
 
     public void updateFrame() {
@@ -243,6 +260,7 @@ public class HockeyGameEngine {
         Player scorer = scoringPlayer == PlayerType.PLAYER_1 ? gameState.getPlayerOne() : gameState.getPlayerTwo();
         scorer.setScore(scorer.getScore() + 1);
         gameState.setLastScoringPlayer(scoringPlayer);
+        addMoveEvent(HockeyMoveType.GOAL, scoringPlayer);
 
         PlayerType winner = gameState.calculateWinner();
         if (winner != null) {
@@ -251,6 +269,7 @@ public class HockeyGameEngine {
             gameState.getPlayerOne().stop();
             gameState.getPlayerTwo().stop();
             gameState.getPuck().stop();
+            addMoveEvent(HockeyMoveType.GAME_OVER, winner);
             return;
         }
 
@@ -275,6 +294,7 @@ public class HockeyGameEngine {
         if (CollisionService.playerHitsPuck(player, puck) && player.isMoving()) {
             CollisionService.transferPlayerImpactToPuck(player, puck);
             gameState.setGameStatus(GameStatus.PUCK_MOVING);
+            addMoveEvent(HockeyMoveType.PUCK_HIT, player.getPlayerType());
         }
     }
 
@@ -294,6 +314,11 @@ public class HockeyGameEngine {
             puck.setY(RINK_MAX_Y - puck.getRadius());
             puck.setVelocityY(-Math.abs(puck.getVelocityY()));
         }
+    }
+
+    private void addMoveEvent(HockeyMoveType moveType, PlayerType playerType) {
+        PlayerType eventPlayerType = playerType == null ? gameState.getActivePlayer() : playerType;
+        pendingMoveEvents.add(new HockeyMove(moveType, eventPlayerType, gameState));
     }
 
     private double normalizeAngle(double angleRadians) {
