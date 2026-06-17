@@ -23,14 +23,14 @@
     <top>
         <VBox>
             <MenuBar style="-fx-background-color: #123047; -fx-padding: 4 8 4 8;">
-                <Menu text="Game">
+                <Menu style="-fx-text-fill: white;" text="Game">
                     <MenuItem onAction="#onNewGame" text="New Game" />
                     <MenuItem onAction="#onSaveGame" text="Save Game" />
                     <MenuItem onAction="#onLoadGame" text="Load Game" />
                     <SeparatorMenuItem />
                     <MenuItem onAction="#onReplay" text="Replay" />
                 </Menu>
-                <Menu text="Documentation">
+                <Menu style="-fx-text-fill: white;" text="Documentation">
                     <MenuItem onAction="#onGenerateDocumentation" text="Generate Documentation" />
                 </Menu>
             </MenuBar>

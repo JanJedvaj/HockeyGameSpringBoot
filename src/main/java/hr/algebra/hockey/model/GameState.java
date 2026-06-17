@@ -137,6 +137,16 @@ public class GameState implements Serializable {
         return playerOne.getScore() >= winningScore || playerTwo.getScore() >= winningScore;
     }
 
+    public PlayerType calculateScoreLeader() {
+        if (playerOne.getScore() > playerTwo.getScore()) {
+            return PlayerType.PLAYER_1;
+        }
+        if (playerTwo.getScore() > playerOne.getScore()) {
+            return PlayerType.PLAYER_2;
+        }
+        return null;
+    }
+
     public PlayerType calculateWinner() {
         if (playerOne.getScore() >= winningScore) {
             return PlayerType.PLAYER_1;
@@ -145,6 +155,20 @@ public class GameState implements Serializable {
             return PlayerType.PLAYER_2;
         }
         return null;
+    }
+
+    public void copyFrom(GameState gameState) {
+        playerOne = gameState.getPlayerOne();
+        playerTwo = gameState.getPlayerTwo();
+        puck = gameState.getPuck();
+        timeLeft = gameState.getTimeLeft();
+        winningScore = gameState.getWinningScore();
+        aimAngleRadians = gameState.getAimAngleRadians();
+        activePlayer = gameState.getActivePlayer();
+        localPlayerType = gameState.getLocalPlayerType();
+        lastScoringPlayer = gameState.getLastScoringPlayer();
+        winner = gameState.getWinner();
+        gameStatus = gameState.getGameStatus();
     }
 
     public void resetForNewGame() {

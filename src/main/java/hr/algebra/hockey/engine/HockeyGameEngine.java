@@ -41,6 +41,17 @@ public class HockeyGameEngine {
         return gameState;
     }
 
+    public void loadGameState(GameState loadedGameState) {
+        PlayerType currentLocalPlayerType = gameState.getLocalPlayerType();
+        gameState.copyFrom(loadedGameState);
+        gameState.setLocalPlayerType(currentLocalPlayerType);
+        if (gameState.getGameStatus() == GameStatus.FINISHED
+                || gameState.getGameStatus() == GameStatus.REPLAYING) {
+            gameState.setGameStatus(GameStatus.READY);
+        }
+        prepareModeDefaults();
+    }
+
     public void startNewGame() {
         PlayerType localPlayerType = gameState.getLocalPlayerType();
         gameState.resetForNewGame();
@@ -48,6 +59,33 @@ public class HockeyGameEngine {
         prepareModeDefaults();
         singlePlayerOpponentDirection = 1;
         gameState.setGameStatus(GameStatus.READY);
+    }
+
+    public void tickTimer() {
+        if (gameState.getGameStatus() == GameStatus.PAUSED
+                || gameState.getGameStatus() == GameStatus.FINISHED
+                || gameState.getGameStatus() == GameStatus.REPLAYING) {
+            return;
+        }
+
+        if (gameState.getTimeLeft() <= 0) {
+            finishGameByTimer();
+            return;
+        }
+
+        gameState.setTimeLeft(gameState.getTimeLeft() - 1);
+        if (gameState.getTimeLeft() <= 0) {
+            finishGameByTimer();
+        }
+    }
+
+    public void finishGameByTimer() {
+        gameState.setTimeLeft(0);
+        gameState.setWinner(gameState.calculateScoreLeader());
+        gameState.setGameStatus(GameStatus.FINISHED);
+        gameState.getPlayerOne().stop();
+        gameState.getPlayerTwo().stop();
+        gameState.getPuck().stop();
     }
 
     public void pauseGame() {

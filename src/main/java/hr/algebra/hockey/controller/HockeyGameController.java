@@ -7,6 +7,7 @@ import hr.algebra.hockey.model.GameStatus;
 import hr.algebra.hockey.model.Player;
 import hr.algebra.hockey.model.PlayerType;
 import hr.algebra.hockey.model.Puck;
+import hr.algebra.hockey.utils.GameSaveUtils;
 import javafx.animation.AnimationTimer;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -20,12 +21,9 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Line;
 import javafx.scene.shape.Polygon;
-import javafx.scene.shape.Rectangle;
 import javafx.scene.shape.StrokeLineCap;
 
 public class HockeyGameController {
-    private static final double PLAYER_WIDTH = 24;
-    private static final double PLAYER_HEIGHT = 88;
     private static final double AIM_ARROW_LENGTH = 54;
     private static final double AIM_ARROW_HEAD_LENGTH = 12;
     private static final double AIM_ARROW_HEAD_WIDTH = 8;
@@ -53,6 +51,7 @@ public class HockeyGameController {
     private final Polygon aimArrowHead = new Polygon();
     private AnimationTimer gameLoop;
     private boolean gameLoopRunning;
+    private long lastTimerTick;
 
     @FXML
     private void initialize() {
@@ -66,6 +65,7 @@ public class HockeyGameController {
     @FXML
     private void onNewGame(ActionEvent event) {
         engine.startNewGame();
+        lastTimerTick = 0;
         drawGameState();
         updateStatusLabel();
         rinkPane.requestFocus();
@@ -73,12 +73,30 @@ public class HockeyGameController {
 
     @FXML
     private void onSaveGame(ActionEvent event) {
-        statusLabel.setText("Save game will be implemented in the serialization MVP.");
+        try {
+            GameSaveUtils.saveGame(engine.getGameState());
+            statusLabel.setText("Game saved to game/save.dat.");
+            rinkPane.requestFocus();
+        } catch (Exception exception) {
+            statusLabel.setText("Save failed: " + exception.getMessage());
+        }
     }
 
     @FXML
     private void onLoadGame(ActionEvent event) {
-        statusLabel.setText("Load game will be implemented in the serialization MVP.");
+        try {
+            if (!GameSaveUtils.saveGameExists()) {
+                statusLabel.setText("No saved game found at game/save.dat.");
+                return;
+            }
+            engine.loadGameState(GameSaveUtils.loadGame());
+            lastTimerTick = 0;
+            drawGameState();
+            updateStatusLabel();
+            rinkPane.requestFocus();
+        } catch (Exception exception) {
+            statusLabel.setText("Load failed: " + exception.getMessage());
+        }
     }
 
     @FXML
@@ -149,6 +167,7 @@ public class HockeyGameController {
                     engine.updateAimAngle();
                 }
 
+                updateTimer(now);
                 engine.updateFrame();
                 clampGameObjects();
                 drawGameState();
@@ -161,6 +180,18 @@ public class HockeyGameController {
         if (!gameLoopRunning) {
             gameLoop.start();
             gameLoopRunning = true;
+        }
+    }
+
+    private void updateTimer(long now) {
+        if (lastTimerTick == 0) {
+            lastTimerTick = now;
+            return;
+        }
+
+        if (now - lastTimerTick >= 1_000_000_000L) {
+            engine.tickTimer();
+            lastTimerTick = now;
         }
     }
 
@@ -263,8 +294,13 @@ public class HockeyGameController {
             }
             case LAUNCHING, PUCK_MOVING -> statusLabel.setText(activePlayerName + " launched. Waiting for movement to settle...");
             case PAUSED -> statusLabel.setText("Paused - press Start to continue.");
-            case FINISHED -> statusLabel.setText(playerName(gameState.getWinner()) + " wins! Final score "
-                    + gameState.getPlayerOne().getScore() + " - " + gameState.getPlayerTwo().getScore() + ".");
+            case FINISHED -> {
+                String result = gameState.getWinner() == null
+                        ? "Draw"
+                        : playerName(gameState.getWinner()) + " wins";
+                statusLabel.setText(result + "! Final score "
+                        + gameState.getPlayerOne().getScore() + " - " + gameState.getPlayerTwo().getScore() + ".");
+            }
             case REPLAYING -> statusLabel.setText("Replay in progress.");
             case TURN_SWITCHING -> statusLabel.setText("Switching turns...");
         }
