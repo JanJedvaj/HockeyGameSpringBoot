@@ -2,6 +2,7 @@ package hr.algebra.hockey.controller;
 
 import hr.algebra.hockey.HockeyGameApplication;
 import hr.algebra.hockey.engine.HockeyGameEngine;
+import hr.algebra.hockey.jndi.ConfigurationReader;
 import hr.algebra.hockey.model.GameState;
 import hr.algebra.hockey.model.GameStatus;
 import hr.algebra.hockey.model.HockeyMove;
@@ -69,9 +70,19 @@ public class HockeyGameController {
         configureAimArrow();
         configureKeyboardInput();
         configureGameLoop();
+        showConfigurationInfo();
         drawGameState();
         updateStatusLabel();
     }
+
+    private void showConfigurationInfo() {
+        try {
+            chatTextArea.appendText("Configuration: " + ConfigurationReader.describeConfiguration() + System.lineSeparator());
+        } catch (Exception exception) {
+            chatTextArea.appendText("Configuration could not be loaded: " + exception.getMessage() + System.lineSeparator());
+        }
+    }
+
 
     @FXML
     private void onNewGame(ActionEvent event) {

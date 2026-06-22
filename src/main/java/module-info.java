@@ -2,6 +2,7 @@ module hr.algebra.hockey {
     requires javafx.controls;
     requires javafx.fxml;
     requires java.xml;
+    requires java.naming;
 
     opens hr.algebra.hockey to javafx.fxml;
     opens hr.algebra.hockey.controller to javafx.fxml;
