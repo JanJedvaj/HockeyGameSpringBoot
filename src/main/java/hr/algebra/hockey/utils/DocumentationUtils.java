@@ -5,6 +5,7 @@ import hr.algebra.hockey.Launcher;
 import hr.algebra.hockey.controller.HockeyGameController;
 import hr.algebra.hockey.engine.CollisionService;
 import hr.algebra.hockey.engine.HockeyGameEngine;
+import hr.algebra.hockey.exception.ChatActionException;
 import hr.algebra.hockey.jndi.ConfigurationKey;
 import hr.algebra.hockey.jndi.ConfigurationReader;
 import hr.algebra.hockey.jndi.InitialDirContextCloseable;
@@ -18,6 +19,9 @@ import hr.algebra.hockey.model.PlayerType;
 import hr.algebra.hockey.model.Puck;
 import hr.algebra.hockey.network.MultiplayerMessage;
 import hr.algebra.hockey.network.SocketMultiplayerService;
+import hr.algebra.hockey.rmi.ChatRemoteService;
+import hr.algebra.hockey.rmi.ChatRemoteServiceImpl;
+import hr.algebra.hockey.rmi.RmiServer;
 
 import java.io.IOException;
 import java.lang.reflect.Constructor;
@@ -43,6 +47,7 @@ public final class DocumentationUtils {
             HockeyGameController.class,
             HockeyGameEngine.class,
             CollisionService.class,
+            ChatActionException.class,
             GameState.class,
             GameStatus.class,
             HockeyMove.class,
@@ -53,6 +58,10 @@ public final class DocumentationUtils {
             Puck.class,
             MultiplayerMessage.class,
             SocketMultiplayerService.class,
+            ChatRemoteService.class,
+            ChatRemoteServiceImpl.class,
+            RmiServer.class,
+            ChatUtils.class,
             GameSaveUtils.class,
             XmlUtils.class,
             DocumentationUtils.class

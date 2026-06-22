@@ -12,10 +12,13 @@ import hr.algebra.hockey.model.Player;
 import hr.algebra.hockey.model.PlayerType;
 import hr.algebra.hockey.model.Puck;
 import hr.algebra.hockey.network.SocketMultiplayerService;
+import hr.algebra.hockey.rmi.ChatRemoteService;
+import hr.algebra.hockey.utils.ChatUtils;
 import hr.algebra.hockey.utils.DocumentationUtils;
 import hr.algebra.hockey.utils.GameSaveUtils;
 import hr.algebra.hockey.utils.XmlUtils;
 import javafx.animation.AnimationTimer;
+import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.application.Platform;
@@ -35,6 +38,8 @@ import javafx.scene.shape.StrokeLineCap;
 import javafx.util.Duration;
 
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class HockeyGameController {
@@ -66,7 +71,10 @@ public class HockeyGameController {
     private final Polygon aimArrowHead = new Polygon();
     private AnimationTimer gameLoop;
     private Timeline replayTimeline;
+    private Timeline chatRefreshTimeline;
     private SocketMultiplayerService multiplayerService;
+    private volatile ChatRemoteService chatRemoteService;
+    private final AtomicBoolean chatRefreshInProgress = new AtomicBoolean();
     private long lastNetworkBroadcast;
     private boolean gameLoopRunning;
     private long lastTimerTick;
@@ -78,6 +86,7 @@ public class HockeyGameController {
         configureGameLoop();
         showConfigurationInfo();
         configureMultiplayer();
+        configureRmiChat();
         drawGameState();
         updateStatusLabel();
     }
@@ -164,6 +173,9 @@ public class HockeyGameController {
 
     public void shutdown() {
         stopGameLoop();
+        if (chatRefreshTimeline != null) {
+            chatRefreshTimeline.stop();
+        }
         if (multiplayerService != null) {
             multiplayerService.close();
         }
@@ -277,8 +289,73 @@ public class HockeyGameController {
         if (message == null || message.isBlank()) {
             return;
         }
-        chatTextArea.appendText("Me: " + message + System.lineSeparator());
-        chatInputField.clear();
+
+        ChatRemoteService service = chatRemoteService;
+        if (service == null) {
+            statusLabel.setText("RMI chat is not connected. Start RMI_SERVER.");
+            return;
+        }
+
+        sendChatButton.setDisable(true);
+        PlayerType sender = engine.getGameState().getLocalPlayerType();
+        CompletableFuture.runAsync(() -> ChatUtils.sendChatMessage(service, sender, message))
+                .whenComplete((unused, exception) -> Platform.runLater(() -> {
+                    if (exception != null) {
+                        chatRemoteService = null;
+                        statusLabel.setText("RMI chat send failed. Reconnecting...");
+                    } else {
+                        chatInputField.clear();
+                        refreshChatMessages();
+                    }
+                    sendChatButton.setDisable(chatRemoteService == null);
+                    rinkPane.requestFocus();
+                }));
+    }
+
+    private void configureRmiChat() {
+        if (!isMultiplayerMode()) {
+            chatInputField.setDisable(true);
+            sendChatButton.setDisable(true);
+            chatTextArea.setPromptText("RMI chat is available in multiplayer mode.");
+            return;
+        }
+
+        chatInputField.setDisable(true);
+        sendChatButton.setDisable(true);
+        chatTextArea.setText("RMI chat unavailable. Start RMI_SERVER; connection will retry automatically.");
+        chatRefreshTimeline = new Timeline(new KeyFrame(Duration.seconds(1), event -> refreshChatMessages()));
+        chatRefreshTimeline.setCycleCount(Animation.INDEFINITE);
+        chatRefreshTimeline.play();
+        refreshChatMessages();
+    }
+
+    private void refreshChatMessages() {
+        if (!isMultiplayerMode() || !chatRefreshInProgress.compareAndSet(false, true)) {
+            return;
+        }
+
+        CompletableFuture.supplyAsync(() -> {
+            ChatRemoteService service = chatRemoteService;
+            if (service == null) {
+                service = ChatUtils.initializeChatRemoteService().orElse(null);
+                chatRemoteService = service;
+            }
+            return service == null ? null : ChatUtils.getAllMessages(service);
+        }).whenComplete((messages, exception) -> Platform.runLater(() -> {
+            chatRefreshInProgress.set(false);
+            if (exception != null || messages == null) {
+                chatRemoteService = null;
+                chatInputField.setDisable(true);
+                sendChatButton.setDisable(true);
+                chatTextArea.setText("RMI chat unavailable. Start RMI_SERVER; connection will retry automatically.");
+                return;
+            }
+
+            chatInputField.setDisable(false);
+            sendChatButton.setDisable(false);
+            chatTextArea.setText(String.join(System.lineSeparator(), messages));
+            chatTextArea.setPromptText("RMI chat connected. No messages yet.");
+        }));
     }
 
     private void resetMoveHistory() {

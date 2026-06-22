@@ -1,0 +1,10 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="RMI_SERVER" type="Application" factoryName="Application">
+    <option name="MAIN_CLASS_NAME" value="hr.algebra.hockey.rmi.RmiServer" />
+    <module name="hockey" />
+    <option name="PROGRAM_PARAMETERS" value="" />
+    <method v="2">
+      <option name="Make" enabled="true" />
+    </method>
+  </configuration>
+</component>
