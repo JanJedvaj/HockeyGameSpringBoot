@@ -62,6 +62,7 @@ public final class DocumentationUtils {
             ChatRemoteServiceImpl.class,
             RmiServer.class,
             ChatUtils.class,
+            DialogUtils.class,
             GameSaveUtils.class,
             XmlUtils.class,
             DocumentationUtils.class

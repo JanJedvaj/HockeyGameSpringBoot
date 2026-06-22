@@ -1,0 +1,77 @@
+.app-root {
+    -fx-background-color: #d8edf4;
+}
+
+.app-menu-bar {
+    -fx-background-color: #123047;
+    -fx-padding: 4 8 4 8;
+}
+
+.scoreboard-bar {
+    -fx-background-color: #f8fbfd;
+    -fx-border-color: #b7ced9;
+    -fx-border-width: 0 0 1 0;
+}
+
+.score-caption {
+    -fx-font-size: 11px;
+    -fx-text-fill: #537082;
+    -fx-font-weight: bold;
+}
+
+.score-value {
+    -fx-font-size: 28px;
+    -fx-text-fill: #123047;
+    -fx-font-weight: bold;
+}
+
+.timer-value {
+    -fx-font-size: 28px;
+    -fx-text-fill: #a3262a;
+    -fx-font-weight: bold;
+}
+
+.status-label {
+    -fx-font-size: 15px;
+    -fx-text-fill: #123047;
+    -fx-font-weight: bold;
+}
+
+.side-panel {
+    -fx-background-color: #f8fbfd;
+    -fx-border-color: #b7ced9;
+    -fx-border-width: 0 0 0 1;
+}
+
+.section-title {
+    -fx-font-size: 16px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #123047;
+}
+
+.helper-text {
+    -fx-font-size: 13px;
+    -fx-text-fill: #334955;
+}
+
+.primary-button {
+    -fx-background-color: #1f77b4;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+}
+
+.secondary-button {
+    -fx-background-color: #e5edf1;
+    -fx-text-fill: #123047;
+    -fx-font-weight: bold;
+}
+
+.button:disabled {
+    -fx-opacity: 0.55;
+}
+
+.text-area,
+.text-field {
+    -fx-background-radius: 4;
+    -fx-border-radius: 4;
+}

@@ -19,10 +19,10 @@
 <?import javafx.scene.shape.Line?>
 <?import javafx.scene.shape.Rectangle?>
 
-<BorderPane prefHeight="760.0" prefWidth="1120.0" style="-fx-background-color: #d8edf4;" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="hr.algebra.hockey.controller.HockeyGameController">
+<BorderPane prefHeight="760.0" prefWidth="1120.0" styleClass="app-root" stylesheets="@style.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="hr.algebra.hockey.controller.HockeyGameController">
     <top>
         <VBox>
-            <MenuBar style="-fx-background-color: #123047; -fx-padding: 4 8 4 8;">
+            <MenuBar styleClass="app-menu-bar">
                 <Menu style="-fx-text-fill: white;" text="Game">
                     <MenuItem onAction="#onNewGame" text="New Game" />
                     <MenuItem onAction="#onSaveGame" text="Save Game" />
@@ -34,24 +34,24 @@
                     <MenuItem onAction="#onGenerateDocumentation" text="Generate Documentation" />
                 </Menu>
             </MenuBar>
-            <HBox alignment="CENTER_LEFT" spacing="24.0" style="-fx-background-color: #f8fbfd; -fx-border-color: #b7ced9; -fx-border-width: 0 0 1 0;">
+            <HBox alignment="CENTER_LEFT" spacing="24.0" styleClass="scoreboard-bar">
                 <padding>
                     <Insets bottom="12.0" left="20.0" right="20.0" top="12.0" />
                 </padding>
                 <VBox spacing="2.0">
-                    <Label style="-fx-font-size: 11px; -fx-text-fill: #537082; -fx-font-weight: bold;" text="PLAYER" />
-                    <Label fx:id="playerScoreLabel" style="-fx-font-size: 28px; -fx-text-fill: #123047; -fx-font-weight: bold;" text="0" />
+                    <Label fx:id="playerOneNameLabel" styleClass="score-caption" text="PLAYER" />
+                    <Label fx:id="playerScoreLabel" styleClass="score-value" text="0" />
                 </VBox>
                 <VBox spacing="2.0">
-                    <Label style="-fx-font-size: 11px; -fx-text-fill: #537082; -fx-font-weight: bold;" text="OPPONENT" />
-                    <Label fx:id="opponentScoreLabel" style="-fx-font-size: 28px; -fx-text-fill: #123047; -fx-font-weight: bold;" text="0" />
+                    <Label fx:id="playerTwoNameLabel" styleClass="score-caption" text="OPPONENT" />
+                    <Label fx:id="opponentScoreLabel" styleClass="score-value" text="0" />
                 </VBox>
                 <VBox spacing="2.0">
-                    <Label style="-fx-font-size: 11px; -fx-text-fill: #537082; -fx-font-weight: bold;" text="TIME" />
-                    <Label fx:id="timerLabel" style="-fx-font-size: 28px; -fx-text-fill: #a3262a; -fx-font-weight: bold;" text="02:00" />
+                    <Label styleClass="score-caption" text="TIME" />
+                    <Label fx:id="timerLabel" styleClass="timer-value" text="02:00" />
                 </VBox>
                 <Region HBox.hgrow="ALWAYS" />
-                <Label fx:id="statusLabel" maxWidth="420.0" style="-fx-font-size: 15px; -fx-text-fill: #123047; -fx-font-weight: bold;" text="Ready - rotating arrow aims, press P to launch." wrapText="true" />
+                <Label fx:id="statusLabel" maxWidth="420.0" styleClass="status-label" text="Ready - rotating arrow aims, press P to launch." wrapText="true" />
             </HBox>
         </VBox>
     </top>
@@ -83,22 +83,22 @@
     </center>
 
     <right>
-        <VBox prefWidth="300.0" spacing="14.0" style="-fx-background-color: #f8fbfd; -fx-border-color: #b7ced9; -fx-border-width: 0 0 0 1;">
+        <VBox prefWidth="300.0" spacing="14.0" styleClass="side-panel">
             <padding>
                 <Insets bottom="18.0" left="18.0" right="18.0" top="18.0" />
             </padding>
             <VBox spacing="6.0">
-                <Label style="-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: #123047;" text="Controls" />
-                <Label style="-fx-font-size: 13px; -fx-text-fill: #334955;" text="Aim arrow rotates automatically" />
-                <Label style="-fx-font-size: 13px; -fx-text-fill: #334955;" text="Press P to launch active player" />
-                <Label style="-fx-font-size: 13px; -fx-text-fill: #334955;" text="Single player: left player shoots only" wrapText="true" />
+                <Label styleClass="section-title" text="Controls" />
+                <Label styleClass="helper-text" text="Aim arrow rotates automatically" />
+                <Label styleClass="helper-text" text="Press P to launch active player" />
+                <Label fx:id="modeInstructionsLabel" styleClass="helper-text" text="Single player: left player shoots only" wrapText="true" />
             </VBox>
             <HBox spacing="8.0">
-                <Button fx:id="startButton" maxWidth="Infinity" onAction="#onStartGame" style="-fx-background-color: #1f77b4; -fx-text-fill: white; -fx-font-weight: bold;" text="Start" HBox.hgrow="ALWAYS" />
-                <Button fx:id="pauseButton" maxWidth="Infinity" onAction="#onPauseGame" style="-fx-background-color: #e5edf1; -fx-text-fill: #123047; -fx-font-weight: bold;" text="Pause" HBox.hgrow="ALWAYS" />
+                <Button fx:id="startButton" maxWidth="Infinity" onAction="#onStartGame" styleClass="primary-button" text="Start" HBox.hgrow="ALWAYS" />
+                <Button fx:id="pauseButton" maxWidth="Infinity" onAction="#onPauseGame" styleClass="secondary-button" text="Pause" HBox.hgrow="ALWAYS" />
             </HBox>
             <VBox spacing="8.0" VBox.vgrow="ALWAYS">
-                <Label style="-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: #123047;" text="Chat" />
+                <Label styleClass="section-title" text="RMI Chat" />
                 <TextArea fx:id="chatTextArea" editable="false" prefHeight="260.0" promptText="Multiplayer chat messages will appear here." wrapText="true" VBox.vgrow="ALWAYS" />
                 <HBox spacing="8.0">
                     <TextField fx:id="chatInputField" promptText="Message..." HBox.hgrow="ALWAYS" />

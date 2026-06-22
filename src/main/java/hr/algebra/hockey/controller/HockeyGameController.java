@@ -14,6 +14,7 @@ import hr.algebra.hockey.model.Puck;
 import hr.algebra.hockey.network.SocketMultiplayerService;
 import hr.algebra.hockey.rmi.ChatRemoteService;
 import hr.algebra.hockey.utils.ChatUtils;
+import hr.algebra.hockey.utils.DialogUtils;
 import hr.algebra.hockey.utils.DocumentationUtils;
 import hr.algebra.hockey.utils.GameSaveUtils;
 import hr.algebra.hockey.utils.XmlUtils;
@@ -58,8 +59,11 @@ public class HockeyGameController {
     @FXML private Circle puckCircle;
     @FXML private Label playerScoreLabel;
     @FXML private Label opponentScoreLabel;
+    @FXML private Label playerOneNameLabel;
+    @FXML private Label playerTwoNameLabel;
     @FXML private Label timerLabel;
     @FXML private Label statusLabel;
+    @FXML private Label modeInstructionsLabel;
     @FXML private Button startButton;
     @FXML private Button pauseButton;
     @FXML private TextArea chatTextArea;
@@ -77,6 +81,7 @@ public class HockeyGameController {
     private final AtomicBoolean chatRefreshInProgress = new AtomicBoolean();
     private long lastNetworkBroadcast;
     private boolean gameLoopRunning;
+    private boolean gameOverDialogShown;
     private long lastTimerTick;
 
     @FXML
@@ -84,6 +89,7 @@ public class HockeyGameController {
         configureAimArrow();
         configureKeyboardInput();
         configureGameLoop();
+        configureModePresentation();
         showConfigurationInfo();
         configureMultiplayer();
         configureRmiChat();
@@ -97,6 +103,32 @@ public class HockeyGameController {
         } catch (Exception exception) {
             chatTextArea.appendText("Configuration could not be loaded: " + exception.getMessage() + System.lineSeparator());
         }
+    }
+
+    private void configureModePresentation() {
+        PlayerType localPlayerType = engine.getGameState().getLocalPlayerType();
+        if (localPlayerType == PlayerType.SINGLE_PLAYER) {
+            playerOneNameLabel.setText("PLAYER");
+            playerTwoNameLabel.setText("OPPONENT");
+            modeInstructionsLabel.setText("Single player: left player shoots; opponent patrols vertically");
+        } else {
+            playerOneNameLabel.setText("PLAYER 1");
+            playerTwoNameLabel.setText("PLAYER 2");
+            modeInstructionsLabel.setText("Multiplayer: launch only when the status shows your turn");
+        }
+        updateControlAvailability();
+    }
+
+    private void updateControlAvailability() {
+        boolean multiplayerClient = isMultiplayerClient();
+        boolean hostWaiting = isMultiplayerHost()
+                && (multiplayerService == null || !multiplayerService.isConnected());
+        startButton.setDisable(multiplayerClient || hostWaiting);
+        pauseButton.setDisable(multiplayerClient || hostWaiting);
+
+        boolean chatAvailable = isMultiplayerMode() && chatRemoteService != null;
+        chatInputField.setDisable(!chatAvailable);
+        sendChatButton.setDisable(!chatAvailable);
     }
 
 
@@ -156,6 +188,7 @@ public class HockeyGameController {
             if (isMultiplayerHost() && "PLAYER_2 connected.".equals(message)) {
                 broadcastGameStateImmediately();
             }
+            updateControlAvailability();
         });
     }
 
@@ -189,6 +222,7 @@ public class HockeyGameController {
         }
 
         engine.startNewGame();
+        gameOverDialogShown = false;
         resetMoveHistory();
         saveMoveEvent(new HockeyMove(HockeyMoveType.GAME_START, engine.getGameState().getActivePlayer(), engine.getGameState()));
         lastTimerTick = 0;
@@ -203,9 +237,11 @@ public class HockeyGameController {
         try {
             GameSaveUtils.saveGame(engine.getGameState());
             statusLabel.setText("Game saved to game/save.dat.");
+            DialogUtils.showInformation("Game Saved", "The current game was saved to game/save.dat.");
             rinkPane.requestFocus();
         } catch (Exception exception) {
             statusLabel.setText("Save failed: " + exception.getMessage());
+            DialogUtils.showError("Save Failed", exception.getMessage());
         }
     }
 
@@ -222,13 +258,16 @@ public class HockeyGameController {
                 return;
             }
             engine.loadGameState(GameSaveUtils.loadGame());
+            gameOverDialogShown = false;
             lastTimerTick = 0;
             drawGameState();
             updateStatusLabel();
             broadcastGameStateImmediately();
+            DialogUtils.showInformation("Game Loaded", "The saved game was restored successfully.");
             rinkPane.requestFocus();
         } catch (Exception exception) {
             statusLabel.setText("Load failed: " + exception.getMessage());
+            DialogUtils.showError("Load Failed", exception.getMessage());
         }
     }
 
@@ -245,9 +284,11 @@ public class HockeyGameController {
     private void onGenerateDocumentation(ActionEvent event) {
         try {
             statusLabel.setText("Documentation generated: " + DocumentationUtils.generateDocumentation());
+            DialogUtils.showInformation("Documentation Generated", "HTML documentation was written to doc/documentation.html.");
             rinkPane.requestFocus();
         } catch (Exception exception) {
             statusLabel.setText("Documentation failed: " + exception.getMessage());
+            DialogUtils.showError("Documentation Failed", exception.getMessage());
         }
     }
 
@@ -435,10 +476,14 @@ public class HockeyGameController {
     }
 
     private void setControlsDisabledForReplay(boolean disabled) {
-        startButton.setDisable(disabled);
-        pauseButton.setDisable(disabled);
-        sendChatButton.setDisable(disabled);
-        chatInputField.setDisable(disabled);
+        if (disabled) {
+            startButton.setDisable(true);
+            pauseButton.setDisable(true);
+            sendChatButton.setDisable(true);
+            chatInputField.setDisable(true);
+        } else {
+            updateControlAvailability();
+        }
     }
 
     private void stopGameLoop() {
@@ -673,8 +718,13 @@ public class HockeyGameController {
                 String result = gameState.getWinner() == null
                         ? "Draw"
                         : playerName(gameState.getWinner()) + " wins";
-                statusLabel.setText(result + "! Final score "
-                        + gameState.getPlayerOne().getScore() + " - " + gameState.getPlayerTwo().getScore() + ".");
+                String finalResult = result + "! Final score "
+                        + gameState.getPlayerOne().getScore() + " - " + gameState.getPlayerTwo().getScore() + ".";
+                statusLabel.setText(finalResult);
+                if (!gameOverDialogShown) {
+                    gameOverDialogShown = true;
+                    DialogUtils.showInformation("Game Over", finalResult);
+                }
             }
             case REPLAYING -> statusLabel.setText("Replay in progress.");
             case TURN_SWITCHING -> statusLabel.setText("Switching turns...");

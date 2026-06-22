@@ -6,6 +6,7 @@ import hr.algebra.hockey.jndi.ConfigurationReader;
 import hr.algebra.hockey.model.PlayerType;
 import hr.algebra.hockey.rmi.ChatRemoteService;
 
+import javax.naming.NamingException;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
@@ -23,7 +24,7 @@ public final class ChatUtils {
                     ConfigurationReader.getString(ConfigurationKey.HOST_NAME),
                     ConfigurationReader.getInteger(ConfigurationKey.RMI_SERVER_PORT));
             return Optional.of((ChatRemoteService) registry.lookup(ChatRemoteService.REMOTE_OBJECT_NAME));
-        } catch (NotBoundException | java.io.IOException exception) {
+        } catch (NotBoundException | NamingException | java.io.IOException exception) {
             return Optional.empty();
         }
     }

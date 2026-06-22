@@ -1,20 +1,11 @@
 package hr.algebra.hockey.jndi;
 
+import javax.naming.NamingException;
+import javax.naming.directory.InitialDirContext;
 import java.util.Hashtable;
 
-public final class InitialDirContextCloseable implements AutoCloseable {
-    private final Hashtable<String, String> environment;
-
-    public InitialDirContextCloseable(Hashtable<String, String> environment) {
-        this.environment = environment;
-    }
-
-    public Hashtable<String, String> getEnvironment() {
-        return environment;
-    }
-
-    @Override
-    public void close() {
-        environment.clear();
+public final class InitialDirContextCloseable extends InitialDirContext implements AutoCloseable {
+    public InitialDirContextCloseable(Hashtable<?, ?> environment) throws NamingException {
+        super(environment);
     }
 }
