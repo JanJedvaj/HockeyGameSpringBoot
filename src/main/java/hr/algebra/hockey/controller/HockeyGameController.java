@@ -2,6 +2,7 @@ package hr.algebra.hockey.controller;
 
 import hr.algebra.hockey.HockeyGameApplication;
 import hr.algebra.hockey.engine.HockeyGameEngine;
+import hr.algebra.hockey.jndi.ConfigurationKey;
 import hr.algebra.hockey.jndi.ConfigurationReader;
 import hr.algebra.hockey.model.GameState;
 import hr.algebra.hockey.model.GameStatus;
@@ -10,12 +11,14 @@ import hr.algebra.hockey.model.HockeyMoveType;
 import hr.algebra.hockey.model.Player;
 import hr.algebra.hockey.model.PlayerType;
 import hr.algebra.hockey.model.Puck;
+import hr.algebra.hockey.network.SocketMultiplayerService;
 import hr.algebra.hockey.utils.DocumentationUtils;
 import hr.algebra.hockey.utils.GameSaveUtils;
 import hr.algebra.hockey.utils.XmlUtils;
 import javafx.animation.AnimationTimer;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
@@ -42,6 +45,7 @@ public class HockeyGameController {
     private static final double RINK_MIN_Y = 12;
     private static final double RINK_MAX_X = 748;
     private static final double RINK_MAX_Y = 608;
+    private static final long NETWORK_BROADCAST_INTERVAL_NANOS = 50_000_000L;
 
     @FXML private Pane rinkPane;
     @FXML private Circle playerPaddle;
@@ -62,6 +66,8 @@ public class HockeyGameController {
     private final Polygon aimArrowHead = new Polygon();
     private AnimationTimer gameLoop;
     private Timeline replayTimeline;
+    private SocketMultiplayerService multiplayerService;
+    private long lastNetworkBroadcast;
     private boolean gameLoopRunning;
     private long lastTimerTick;
 
@@ -71,6 +77,7 @@ public class HockeyGameController {
         configureKeyboardInput();
         configureGameLoop();
         showConfigurationInfo();
+        configureMultiplayer();
         drawGameState();
         updateStatusLabel();
     }
@@ -84,14 +91,98 @@ public class HockeyGameController {
     }
 
 
+    private void configureMultiplayer() {
+        PlayerType localPlayerType = engine.getGameState().getLocalPlayerType();
+        if (localPlayerType == PlayerType.SINGLE_PLAYER) {
+            return;
+        }
+
+        try {
+            String hostName = ConfigurationReader.getString(ConfigurationKey.HOST_NAME);
+            int hostPort = ConfigurationReader.getInteger(ConfigurationKey.PLAYER_ONE_SERVER_PORT);
+            if (localPlayerType == PlayerType.PLAYER_1) {
+                multiplayerService = SocketMultiplayerService.createHost(
+                        hostPort,
+                        () -> Platform.runLater(this::launchRemotePlayer),
+                        this::showNetworkStatus);
+            } else {
+                multiplayerService = SocketMultiplayerService.createClient(
+                        hostName,
+                        hostPort,
+                        gameState -> Platform.runLater(() -> applyNetworkState(gameState)),
+                        this::showNetworkStatus);
+            }
+            multiplayerService.start();
+        } catch (Exception exception) {
+            showNetworkStatus("Multiplayer setup failed: " + exception.getMessage());
+        }
+    }
+
+    private void applyNetworkState(GameState networkGameState) {
+        if (!isMultiplayerClient()) {
+            return;
+        }
+        engine.applyNetworkState(networkGameState);
+        drawGameState();
+        updateStatusLabel();
+        rinkPane.requestFocus();
+    }
+
+    private void launchRemotePlayer() {
+        if (!isMultiplayerHost()
+                || engine.getGameState().getActivePlayer() != PlayerType.PLAYER_2
+                || !canLaunchInCurrentStatus()) {
+            return;
+        }
+
+        engine.launchActivePlayer();
+        savePendingMoveEvents();
+        startGameLoop();
+        broadcastGameStateImmediately();
+    }
+
+    private void showNetworkStatus(String message) {
+        Platform.runLater(() -> {
+            chatTextArea.appendText("Network: " + message + System.lineSeparator());
+            if (isMultiplayerHost() && "PLAYER_2 connected.".equals(message)) {
+                broadcastGameStateImmediately();
+            }
+        });
+    }
+
+    private boolean isMultiplayerHost() {
+        return engine.getGameState().getLocalPlayerType() == PlayerType.PLAYER_1;
+    }
+
+    private boolean isMultiplayerClient() {
+        return engine.getGameState().getLocalPlayerType() == PlayerType.PLAYER_2;
+    }
+
+    private boolean isMultiplayerMode() {
+        return isMultiplayerHost() || isMultiplayerClient();
+    }
+
+    public void shutdown() {
+        stopGameLoop();
+        if (multiplayerService != null) {
+            multiplayerService.close();
+        }
+    }
+
     @FXML
     private void onNewGame(ActionEvent event) {
+        if (isMultiplayerClient()) {
+            statusLabel.setText("Only PLAYER_1 can start a new multiplayer game.");
+            return;
+        }
+
         engine.startNewGame();
         resetMoveHistory();
         saveMoveEvent(new HockeyMove(HockeyMoveType.GAME_START, engine.getGameState().getActivePlayer(), engine.getGameState()));
         lastTimerTick = 0;
         drawGameState();
         updateStatusLabel();
+        broadcastGameStateImmediately();
         rinkPane.requestFocus();
     }
 
@@ -108,6 +199,11 @@ public class HockeyGameController {
 
     @FXML
     private void onLoadGame(ActionEvent event) {
+        if (isMultiplayerClient()) {
+            statusLabel.setText("Only PLAYER_1 can load a multiplayer game.");
+            return;
+        }
+
         try {
             if (!GameSaveUtils.saveGameExists()) {
                 statusLabel.setText("No saved game found at game/save.dat.");
@@ -117,6 +213,7 @@ public class HockeyGameController {
             lastTimerTick = 0;
             drawGameState();
             updateStatusLabel();
+            broadcastGameStateImmediately();
             rinkPane.requestFocus();
         } catch (Exception exception) {
             statusLabel.setText("Load failed: " + exception.getMessage());
@@ -125,6 +222,10 @@ public class HockeyGameController {
 
     @FXML
     private void onReplay(ActionEvent event) {
+        if (isMultiplayerMode()) {
+            statusLabel.setText("Replay is available in SINGLE_PLAYER mode.");
+            return;
+        }
         startReplay();
     }
 
@@ -140,17 +241,33 @@ public class HockeyGameController {
 
     @FXML
     private void onStartGame(ActionEvent event) {
+        if (isMultiplayerClient()) {
+            statusLabel.setText("PLAYER_1 controls multiplayer start and pause.");
+            return;
+        }
+        if (isMultiplayerHost() && (multiplayerService == null || !multiplayerService.isConnected())) {
+            statusLabel.setText("Wait for PLAYER_2 to connect before starting.");
+            return;
+        }
+
         engine.resumeGame();
         startGameLoop();
         drawGameState();
         updateStatusLabel();
+        broadcastGameStateImmediately();
         rinkPane.requestFocus();
     }
 
     @FXML
     private void onPauseGame(ActionEvent event) {
+        if (isMultiplayerClient()) {
+            statusLabel.setText("PLAYER_1 controls multiplayer start and pause.");
+            return;
+        }
+
         engine.pauseGame();
         updateStatusLabel();
+        broadcastGameStateImmediately();
         rinkPane.requestFocus();
     }
 
@@ -281,6 +398,10 @@ public class HockeyGameController {
         gameLoop = new AnimationTimer() {
             @Override
             public void handle(long now) {
+                if (isMultiplayerClient()) {
+                    return;
+                }
+
                 GameStatus status = engine.getGameState().getGameStatus();
                 if (status == GameStatus.READY || status == GameStatus.RUNNING) {
                     engine.updateAimAngle();
@@ -292,8 +413,27 @@ public class HockeyGameController {
                 clampGameObjects();
                 drawGameState();
                 updateStatusLabel();
+                broadcastGameState(now);
             }
         };
+    }
+
+    private void broadcastGameState(long now) {
+        if (!isMultiplayerHost() || multiplayerService == null || !multiplayerService.isConnected()) {
+            return;
+        }
+
+        if (now - lastNetworkBroadcast >= NETWORK_BROADCAST_INTERVAL_NANOS) {
+            multiplayerService.sendGameState(engine.getGameState().createSnapshot());
+            lastNetworkBroadcast = now;
+        }
+    }
+
+    private void broadcastGameStateImmediately() {
+        if (isMultiplayerHost() && multiplayerService != null && multiplayerService.isConnected()) {
+            multiplayerService.sendGameState(engine.getGameState().createSnapshot());
+            lastNetworkBroadcast = 0;
+        }
     }
 
     private void startGameLoop() {
@@ -317,8 +457,27 @@ public class HockeyGameController {
     }
 
     private void launchActivePlayer() {
-        GameStatus status = engine.getGameState().getGameStatus();
-        if (status == GameStatus.PAUSED || status == GameStatus.FINISHED || status == GameStatus.REPLAYING) {
+        if (!canLaunchInCurrentStatus()) {
+            return;
+        }
+
+        PlayerType localPlayerType = engine.getGameState().getLocalPlayerType();
+        if (isMultiplayerMode() && engine.getGameState().getActivePlayer() != localPlayerType) {
+            statusLabel.setText("Wait for your multiplayer turn.");
+            return;
+        }
+        if (isMultiplayerHost() && (multiplayerService == null || !multiplayerService.isConnected())) {
+            statusLabel.setText("Wait for PLAYER_2 to connect before launching.");
+            return;
+        }
+
+        if (isMultiplayerClient()) {
+            if (multiplayerService == null || !multiplayerService.isConnected()) {
+                statusLabel.setText("PLAYER_2 is not connected to PLAYER_1.");
+                return;
+            }
+            multiplayerService.sendLaunchRequest();
+            statusLabel.setText("Launch sent to PLAYER_1.");
             return;
         }
 
@@ -327,6 +486,12 @@ public class HockeyGameController {
         savePendingMoveEvents();
         drawGameState();
         updateStatusLabel();
+        broadcastGameStateImmediately();
+    }
+
+    private boolean canLaunchInCurrentStatus() {
+        GameStatus status = engine.getGameState().getGameStatus();
+        return status == GameStatus.READY || status == GameStatus.RUNNING;
     }
 
     private void drawGameState() {
@@ -407,6 +572,17 @@ public class HockeyGameController {
 
         switch (gameState.getGameStatus()) {
             case READY, RUNNING -> {
+                if (isMultiplayerMode()) {
+                    if (multiplayerService == null || !multiplayerService.isConnected()) {
+                        statusLabel.setText(modeName + " - waiting for multiplayer connection.");
+                    } else if (gameState.getActivePlayer() == gameState.getLocalPlayerType()) {
+                        statusLabel.setText(modeName + " - your turn. Press P to launch.");
+                    } else {
+                        statusLabel.setText(modeName + " - waiting for " + activePlayerName + " to launch.");
+                    }
+                    return;
+                }
+
                 if (gameState.getLastScoringPlayer() != null) {
                     statusLabel.setText(playerName(gameState.getLastScoringPlayer()) + " scored! " + modeName
                             + " - " + activePlayerName + " aiming. Press P to launch.");

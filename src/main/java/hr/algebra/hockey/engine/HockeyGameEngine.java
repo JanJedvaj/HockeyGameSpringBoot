@@ -64,6 +64,13 @@ public class HockeyGameEngine {
         pendingMoveEvents.clear();
         prepareModeDefaults();
     }
+    public void applyNetworkState(GameState networkGameState) {
+        PlayerType currentLocalPlayerType = gameState.getLocalPlayerType();
+        gameState.copyFrom(networkGameState);
+        gameState.setLocalPlayerType(currentLocalPlayerType);
+        pendingMoveEvents.clear();
+    }
+
 
     public void startNewGame() {
         PlayerType localPlayerType = gameState.getLocalPlayerType();

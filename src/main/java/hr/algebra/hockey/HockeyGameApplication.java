@@ -1,8 +1,10 @@
 package hr.algebra.hockey;
 
+import hr.algebra.hockey.controller.HockeyGameController;
 import hr.algebra.hockey.model.PlayerType;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 
@@ -17,11 +19,14 @@ public class HockeyGameApplication extends Application {
         configurePlayerType(getParameters().getRaw());
 
         FXMLLoader fxmlLoader = new FXMLLoader(HockeyGameApplication.class.getResource("hello-view.fxml"));
-        Scene scene = new Scene(fxmlLoader.load(), 1120, 760);
+        Parent root = fxmlLoader.load();
+        HockeyGameController controller = fxmlLoader.getController();
+        Scene scene = new Scene(root, 1120, 760);
         stage.setTitle("Ice Hockey Game - " + loggedInPlayerType);
         stage.setScene(scene);
         stage.setMinWidth(980);
         stage.setMinHeight(680);
+        stage.setOnCloseRequest(event -> controller.shutdown());
         stage.show();
     }
 

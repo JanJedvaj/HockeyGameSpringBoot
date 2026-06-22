@@ -170,6 +170,42 @@ public class GameState implements Serializable {
         winner = gameState.getWinner();
         gameStatus = gameState.getGameStatus();
     }
+    public GameState createSnapshot() {
+        GameState snapshot = new GameState();
+        snapshot.playerOne = copyPlayer(playerOne);
+        snapshot.playerTwo = copyPlayer(playerTwo);
+        snapshot.puck = copyPuck(puck);
+        snapshot.timeLeft = timeLeft;
+        snapshot.winningScore = winningScore;
+        snapshot.aimAngleRadians = aimAngleRadians;
+        snapshot.activePlayer = activePlayer;
+        snapshot.localPlayerType = localPlayerType;
+        snapshot.lastScoringPlayer = lastScoringPlayer;
+        snapshot.winner = winner;
+        snapshot.gameStatus = gameStatus;
+        return snapshot;
+    }
+
+    private static Player copyPlayer(Player source) {
+        Player copy = new Player(
+                source.getPlayerType(),
+                source.getX(),
+                source.getY(),
+                source.getRadius(),
+                source.getLaunchPower());
+        copy.setVelocityX(source.getVelocityX());
+        copy.setVelocityY(source.getVelocityY());
+        copy.setScore(source.getScore());
+        return copy;
+    }
+
+    private static Puck copyPuck(Puck source) {
+        Puck copy = new Puck(source.getX(), source.getY(), source.getRadius());
+        copy.setVelocityX(source.getVelocityX());
+        copy.setVelocityY(source.getVelocityY());
+        return copy;
+    }
+
 
     public void resetForNewGame() {
         playerOne.reset(120, 310);

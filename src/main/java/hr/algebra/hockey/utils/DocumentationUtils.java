@@ -16,6 +16,8 @@ import hr.algebra.hockey.model.HockeyMoveType;
 import hr.algebra.hockey.model.Player;
 import hr.algebra.hockey.model.PlayerType;
 import hr.algebra.hockey.model.Puck;
+import hr.algebra.hockey.network.MultiplayerMessage;
+import hr.algebra.hockey.network.SocketMultiplayerService;
 
 import java.io.IOException;
 import java.lang.reflect.Constructor;
@@ -49,6 +51,8 @@ public final class DocumentationUtils {
             Player.class,
             PlayerType.class,
             Puck.class,
+            MultiplayerMessage.class,
+            SocketMultiplayerService.class,
             GameSaveUtils.class,
             XmlUtils.class,
             DocumentationUtils.class
