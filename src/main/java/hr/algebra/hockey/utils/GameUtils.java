@@ -1,5 +1,6 @@
-package hr.algebra.hockey.engine;
+package hr.algebra.hockey.utils;
 
+import hr.algebra.hockey.engine.CollisionService;
 import hr.algebra.hockey.model.GameState;
 import hr.algebra.hockey.model.GameStatus;
 import hr.algebra.hockey.model.HockeyMove;
@@ -10,8 +11,17 @@ import hr.algebra.hockey.model.Puck;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
-public class HockeyGameEngine {
+public class GameUtils {
+    private static final Logger LOGGER = Logger.getLogger(GameUtils.class.getName());
+    private static final Path SAVE_GAME_PATH = Path.of("game", "save.dat");
     private static final double FULL_CIRCLE_RADIANS = Math.PI * 2;
     private static final double DEFAULT_AIM_ROTATION_SPEED = 0.045;
     private static final double PLAYER_FRICTION = 0.95;
@@ -28,23 +38,46 @@ public class HockeyGameEngine {
     private final List<HockeyMove> pendingMoveEvents = new ArrayList<>();
     private int singlePlayerOpponentDirection = 1;
 
-    public HockeyGameEngine() {
+    public GameUtils() {
         gameState = new GameState();
     }
 
-    public HockeyGameEngine(PlayerType localPlayerType) {
+    public GameUtils(PlayerType localPlayerType) {
         this();
         gameState.setLocalPlayerType(localPlayerType);
         prepareModeDefaults();
     }
 
-    public HockeyGameEngine(GameState gameState) {
+    public GameUtils(GameState gameState) {
         this.gameState = gameState;
         prepareModeDefaults();
     }
 
     public GameState getGameState() {
         return gameState;
+    }
+
+    public static void saveGame(GameState gameState) throws IOException {
+        Files.createDirectories(SAVE_GAME_PATH.getParent());
+        try (ObjectOutputStream output = new ObjectOutputStream(Files.newOutputStream(SAVE_GAME_PATH))) {
+            output.writeObject(gameState);
+            LOGGER.info("Game state serialized to " + SAVE_GAME_PATH);
+        }
+    }
+
+    public static GameState loadGame() throws IOException, ClassNotFoundException {
+        try (ObjectInputStream input = new ObjectInputStream(Files.newInputStream(SAVE_GAME_PATH))) {
+            GameState loadedState = (GameState) input.readObject();
+            LOGGER.info("Game state deserialized from " + SAVE_GAME_PATH);
+            return loadedState;
+        } catch (IOException | ClassNotFoundException exception) {
+            LOGGER.log(Level.SEVERE, "Game state could not be loaded", exception);
+            throw exception;
+        }
+    }
+
+    public static boolean saveGameExists() {
+        return Files.exists(SAVE_GAME_PATH);
     }
 
     public List<HockeyMove> drainMoveEvents() {
@@ -173,7 +206,11 @@ public class HockeyGameEngine {
         puck.move();
 
         handlePlayerPuckImpact(playerOne, puck);
-        handlePlayerPuckImpact(playerTwo, puck);
+        if (isSinglePlayerMode()) {
+            handleSinglePlayerOpponentPuckImpact(playerTwo, puck);
+        } else {
+            handlePlayerPuckImpact(playerTwo, puck);
+        }
 
         if (handleGoalIfScored(puck)) {
             return;
@@ -302,6 +339,14 @@ public class HockeyGameEngine {
             CollisionService.transferPlayerImpactToPuck(player, puck);
             gameState.setGameStatus(GameStatus.PUCK_MOVING);
             addMoveEvent(HockeyMoveType.PUCK_HIT, player.getPlayerType());
+        }
+    }
+
+    private void handleSinglePlayerOpponentPuckImpact(Player opponent, Puck puck) {
+        double opponentVelocityY = SINGLE_PLAYER_OPPONENT_SPEED * singlePlayerOpponentDirection;
+        if (CollisionService.deflectPuckFromKinematicPlayer(opponent, puck, 0, opponentVelocityY)) {
+            gameState.setGameStatus(GameStatus.PUCK_MOVING);
+            addMoveEvent(HockeyMoveType.PUCK_HIT, PlayerType.PLAYER_2);
         }
     }
 

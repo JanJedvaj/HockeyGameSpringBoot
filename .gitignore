@@ -40,3 +40,7 @@ build/
 
 ### Local agent notes ###
 agents.md
+
+### Generated game data ###
+game/*.dat
+dat/*.dat

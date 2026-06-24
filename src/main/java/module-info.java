@@ -4,6 +4,8 @@ module hr.algebra.hockey {
     requires java.xml;
     requires java.naming;
     requires java.rmi;
+    requires java.logging;
+    requires static lombok;
 
     opens hr.algebra.hockey to javafx.fxml;
     opens hr.algebra.hockey.controller to javafx.fxml;

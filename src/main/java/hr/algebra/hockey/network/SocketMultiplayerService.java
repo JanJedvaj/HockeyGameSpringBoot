@@ -14,8 +14,11 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public final class SocketMultiplayerService implements AutoCloseable {
+    private static final Logger LOGGER = Logger.getLogger(SocketMultiplayerService.class.getName());
     private static final int RETRY_DELAY_MILLISECONDS = 1_000;
     private static final int OUTBOUND_QUEUE_CAPACITY = 4;
 
@@ -72,6 +75,7 @@ public final class SocketMultiplayerService implements AutoCloseable {
                 host ? "hockey-socket-host" : "hockey-socket-client");
         connectionThread.setDaemon(true);
         connectionThread.start();
+        LOGGER.info("Started " + connectionThread.getName() + " on port " + port);
     }
 
     public boolean isConnected() {
@@ -93,10 +97,12 @@ public final class SocketMultiplayerService implements AutoCloseable {
     private void runHost() {
         try (ServerSocket listeningSocket = new ServerSocket(port)) {
             serverSocket = listeningSocket;
+            LOGGER.info("Socket host listening on port " + port);
             publishStatus("PLAYER_1 waiting for PLAYER_2 on port " + port + ".");
             while (running) {
                 try {
                     Socket acceptedSocket = listeningSocket.accept();
+                    LOGGER.info("Accepted multiplayer connection from " + acceptedSocket.getRemoteSocketAddress());
                     handleConnection(acceptedSocket);
                 } catch (SocketException exception) {
                     if (running) {
@@ -105,6 +111,7 @@ public final class SocketMultiplayerService implements AutoCloseable {
                 }
             }
         } catch (IOException exception) {
+            LOGGER.log(Level.SEVERE, "Multiplayer host failed", exception);
             if (running) {
                 publishStatus("Unable to start multiplayer host: " + exception.getMessage());
             }
@@ -117,8 +124,10 @@ public final class SocketMultiplayerService implements AutoCloseable {
                 publishStatus("PLAYER_2 connecting to " + hostName + ":" + port + "...");
                 handleConnection(new Socket(hostName, port));
             } catch (ConnectException exception) {
+                LOGGER.fine("PLAYER_2 connection retry: " + exception.getMessage());
                 sleepBeforeRetry();
             } catch (IOException exception) {
+                LOGGER.log(Level.WARNING, "Multiplayer client connection failed", exception);
                 if (running) {
                     publishStatus("Multiplayer client error: " + exception.getMessage());
                     sleepBeforeRetry();
@@ -130,6 +139,7 @@ public final class SocketMultiplayerService implements AutoCloseable {
     private void handleConnection(Socket connectedSocket) throws IOException {
         socket = connectedSocket;
         connected = true;
+        LOGGER.info("Multiplayer socket connected: " + connectedSocket.getRemoteSocketAddress());
         outboundMessages.clear();
         publishStatus(host ? "PLAYER_2 connected." : "Connected to PLAYER_1.");
 
@@ -140,6 +150,7 @@ public final class SocketMultiplayerService implements AutoCloseable {
             writerThread.start();
             readMessages(inputStream);
         } finally {
+            LOGGER.info("Multiplayer socket connection closed.");
             connected = false;
             socket = null;
             outboundMessages.clear();
@@ -164,6 +175,7 @@ public final class SocketMultiplayerService implements AutoCloseable {
                     Thread.currentThread().interrupt();
                     return;
                 } catch (IOException exception) {
+                    LOGGER.log(Level.WARNING, "Socket writer stopped after an I/O error", exception);
                     closeSocketQuietly();
                     return;
                 }
@@ -183,6 +195,7 @@ public final class SocketMultiplayerService implements AutoCloseable {
             } catch (EOFException | SocketException exception) {
                 return;
             } catch (ClassNotFoundException exception) {
+                LOGGER.log(Level.WARNING, "Unknown multiplayer message class", exception);
                 publishStatus("Unknown multiplayer message received.");
             }
         }
@@ -244,5 +257,6 @@ public final class SocketMultiplayerService implements AutoCloseable {
             } catch (IOException ignored) {
             }
         }
+        LOGGER.info("Socket multiplayer service shut down.");
     }
 }

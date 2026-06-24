@@ -4,7 +4,6 @@ import hr.algebra.hockey.HockeyGameApplication;
 import hr.algebra.hockey.Launcher;
 import hr.algebra.hockey.controller.HockeyGameController;
 import hr.algebra.hockey.engine.CollisionService;
-import hr.algebra.hockey.engine.HockeyGameEngine;
 import hr.algebra.hockey.exception.ChatActionException;
 import hr.algebra.hockey.jndi.ConfigurationKey;
 import hr.algebra.hockey.jndi.ConfigurationReader;
@@ -22,6 +21,10 @@ import hr.algebra.hockey.network.SocketMultiplayerService;
 import hr.algebra.hockey.rmi.ChatRemoteService;
 import hr.algebra.hockey.rmi.ChatRemoteServiceImpl;
 import hr.algebra.hockey.rmi.RmiServer;
+import hr.algebra.hockey.thread.AbstractTheLastHockeyMoveThread;
+import hr.algebra.hockey.thread.AppExecutor;
+import hr.algebra.hockey.thread.ReadTheLastHockeyMoveThread;
+import hr.algebra.hockey.thread.SaveTheLastHockeyMoveThread;
 
 import java.io.IOException;
 import java.lang.reflect.Constructor;
@@ -45,7 +48,7 @@ public final class DocumentationUtils {
             HockeyGameApplication.class,
             Launcher.class,
             HockeyGameController.class,
-            HockeyGameEngine.class,
+            GameUtils.class,
             CollisionService.class,
             ChatActionException.class,
             GameState.class,
@@ -63,9 +66,13 @@ public final class DocumentationUtils {
             RmiServer.class,
             ChatUtils.class,
             DialogUtils.class,
-            GameSaveUtils.class,
+            FileUtils.class,
             XmlUtils.class,
-            DocumentationUtils.class
+            DocumentationUtils.class,
+            AbstractTheLastHockeyMoveThread.class,
+            SaveTheLastHockeyMoveThread.class,
+            ReadTheLastHockeyMoveThread.class,
+            AppExecutor.class
     );
 
     private DocumentationUtils() {

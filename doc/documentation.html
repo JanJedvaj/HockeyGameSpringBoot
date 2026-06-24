@@ -1,0 +1,910 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Ice Hockey Game Documentation</title>
+<style>
+body{font-family:Arial,sans-serif;background:#eef6fa;color:#132f43;margin:0;padding:32px;}
+h1{margin-top:0;} h2{border-bottom:2px solid #1f77b4;padding-bottom:6px;}
+section{background:white;border:1px solid #bed4df;border-radius:6px;margin:18px 0;padding:18px;}
+table{border-collapse:collapse;width:100%;margin:10px 0 18px;}
+th,td{border:1px solid #d4e2e8;padding:8px;text-align:left;vertical-align:top;}
+th{background:#123047;color:white;} code{color:#a3262a;} .meta{color:#537082;}
+</style>
+</head>
+<body>
+<h1>Ice Hockey Game Documentation</h1>
+<p class="meta">Generated with Java Reflection API on 2026-06-23 19:06:55.</p>
+<section>
+<h2>hr.algebra.hockey.HockeyGameApplication</h2>
+<p><strong>Type:</strong> class</p>
+<p><strong>Superclass:</strong> <code>javafx.application.Application</code></p>
+<h3>Constructors</h3>
+<table><tr><th>Modifier</th><th>Signature</th></tr>
+<tr><td>public</td><td><code>hr.algebra.hockey.HockeyGameApplication()</code></td></tr>
+</table>
+<h3>Fields</h3>
+<table><tr><th>Modifier</th><th>Type</th><th>Name</th></tr>
+<tr><td>private static final</td><td><code>Logger</code></td><td>LOGGER</td></tr>
+<tr><td>private static</td><td><code>PlayerType</code></td><td>loggedInPlayerType</td></tr>
+</table>
+<h3>Methods</h3>
+<table><tr><th>Modifier</th><th>Return</th><th>Signature</th></tr>
+<tr><td>private</td><td><code>void</code></td><td><code>configurePlayerType(List)</code></td></tr>
+<tr><td>public static</td><td><code>PlayerType</code></td><td><code>getLoggedInPlayerType()</code></td></tr>
+<tr><td>private static</td><td><code>void</code></td><td><code>lambda$start$0(HockeyGameController, WindowEvent)</code></td></tr>
+<tr><td>public</td><td><code>void</code></td><td><code>start(Stage)</code></td></tr>
+</table>
+</section>
+<section>
+<h2>hr.algebra.hockey.Launcher</h2>
+<p><strong>Type:</strong> class</p>
+<p><strong>Superclass:</strong> <code>java.lang.Object</code></p>
+<h3>Constructors</h3>
+<table><tr><th>Modifier</th><th>Signature</th></tr>
+<tr><td>public</td><td><code>hr.algebra.hockey.Launcher()</code></td></tr>
+</table>
+<h3>Fields</h3>
+<table><tr><th>Modifier</th><th>Type</th><th>Name</th></tr>
+</table>
+<h3>Methods</h3>
+<table><tr><th>Modifier</th><th>Return</th><th>Signature</th></tr>
+<tr><td>public static</td><td><code>void</code></td><td><code>main(String[])</code></td></tr>
+</table>
+</section>
+<section>
+<h2>hr.algebra.hockey.controller.HockeyGameController</h2>
+<p><strong>Type:</strong> class</p>
+<p><strong>Superclass:</strong> <code>java.lang.Object</code></p>
+<h3>Constructors</h3>
+<table><tr><th>Modifier</th><th>Signature</th></tr>
+<tr><td>public</td><td><code>hr.algebra.hockey.controller.HockeyGameController()</code></td></tr>
+</table>
+<h3>Fields</h3>
+<table><tr><th>Modifier</th><th>Type</th><th>Name</th></tr>
+<tr><td>private static final</td><td><code>double</code></td><td>AIM_ARROW_HEAD_LENGTH</td></tr>
+<tr><td>private static final</td><td><code>double</code></td><td>AIM_ARROW_HEAD_WIDTH</td></tr>
+<tr><td>private static final</td><td><code>double</code></td><td>AIM_ARROW_LENGTH</td></tr>
+<tr><td>private static final</td><td><code>Logger</code></td><td>LOGGER</td></tr>
+<tr><td>private static final</td><td><code>long</code></td><td>NETWORK_BROADCAST_INTERVAL_NANOS</td></tr>
+<tr><td>private static final</td><td><code>double</code></td><td>RINK_MAX_X</td></tr>
+<tr><td>private static final</td><td><code>double</code></td><td>RINK_MAX_Y</td></tr>
+<tr><td>private static final</td><td><code>double</code></td><td>RINK_MIN_X</td></tr>
+<tr><td>private static final</td><td><code>double</code></td><td>RINK_MIN_Y</td></tr>
+<tr><td>private final</td><td><code>Polygon</code></td><td>aimArrowHead</td></tr>
+<tr><td>private final</td><td><code>Line</code></td><td>aimArrowLine</td></tr>
+<tr><td>private</td><td><code>TextField</code></td><td>chatInputField</td></tr>
+<tr><td>private final</td><td><code>AtomicBoolean</code></td><td>chatRefreshInProgress</td></tr>
+<tr><td>private</td><td><code>Timeline</code></td><td>chatRefreshTimeline</td></tr>
+<tr><td>private volatile</td><td><code>ChatRemoteService</code></td><td>chatRemoteService</td></tr>
+<tr><td>private</td><td><code>TextArea</code></td><td>chatTextArea</td></tr>
+<tr><td>private final</td><td><code>GameUtils</code></td><td>engine</td></tr>
+<tr><td>private</td><td><code>AnimationTimer</code></td><td>gameLoop</td></tr>
+<tr><td>private</td><td><code>boolean</code></td><td>gameLoopRunning</td></tr>
+<tr><td>private</td><td><code>boolean</code></td><td>gameOverDialogShown</td></tr>
+<tr><td>private</td><td><code>long</code></td><td>lastNetworkBroadcast</td></tr>
+<tr><td>private</td><td><code>long</code></td><td>lastTimerTick</td></tr>
+<tr><td>private</td><td><code>Label</code></td><td>modeInstructionsLabel</td></tr>
+<tr><td>private</td><td><code>SocketMultiplayerService</code></td><td>multiplayerService</td></tr>
+<tr><td>private</td><td><code>Circle</code></td><td>opponentPaddle</td></tr>
+<tr><td>private</td><td><code>Label</code></td><td>opponentScoreLabel</td></tr>
+<tr><td>private</td><td><code>Button</code></td><td>pauseButton</td></tr>
+<tr><td>private</td><td><code>Label</code></td><td>playerOneNameLabel</td></tr>
+<tr><td>private</td><td><code>Circle</code></td><td>playerPaddle</td></tr>
+<tr><td>private</td><td><code>Label</code></td><td>playerScoreLabel</td></tr>
+<tr><td>private</td><td><code>Label</code></td><td>playerTwoNameLabel</td></tr>
+<tr><td>private</td><td><code>Circle</code></td><td>puckCircle</td></tr>
+<tr><td>private</td><td><code>Timeline</code></td><td>replayTimeline</td></tr>
+<tr><td>private</td><td><code>Pane</code></td><td>rinkPane</td></tr>
+<tr><td>private</td><td><code>Button</code></td><td>sendChatButton</td></tr>
+<tr><td>private</td><td><code>Button</code></td><td>startButton</td></tr>
+<tr><td>private</td><td><code>Label</code></td><td>statusLabel</td></tr>
+<tr><td>private</td><td><code>Label</code></td><td>timerLabel</td></tr>
+</table>
+<h3>Methods</h3>
+<table><tr><th>Modifier</th><th>Return</th><th>Signature</th></tr>
+<tr><td>private</td><td><code>void</code></td><td><code>applyNetworkState(GameState)</code></td></tr>
+<tr><td>private</td><td><code>void</code></td><td><code>broadcastGameState(long)</code></td></tr>
+<tr><td>private</td><td><code>void</code></td><td><code>broadcastGameStateImmediately()</code></td></tr>
+<tr><td>private</td><td><code>boolean</code></td><td><code>canLaunchInCurrentStatus()</code></td></tr>
+<tr><td>private</td><td><code>double</code></td><td><code>clamp(double, double, double)</code></td></tr>
+<tr><td>private</td><td><code>void</code></td><td><code>clampGameObjects()</code></td></tr>
+<tr><td>private</td><td><code>void</code></td><td><code>clampPlayer(Player)</code></td></tr>
+<tr><td>private</td><td><code>void</code></td><td><code>configureAimArrow()</code></td></tr>
+<tr><td>private</td><td><code>void</code></td><td><code>configureGameLoop()</code></td></tr>
+<tr><td>private</td><td><code>void</code></td><td><code>configureKeyboardInput()</code></td></tr>
+<tr><td>private</td><td><code>void</code></td><td><code>configureModePresentation()</code></td></tr>
+<tr><td>private</td><td><code>void</code></td><td><code>configureMultiplayer()</code></td></tr>
+<tr><td>private</td><td><code>void</code></td><td><code>configureRmiChat()</code></td></tr>
+<tr><td>private</td><td><code>void</code></td><td><code>drawAimArrow(GameState)</code></td></tr>
+<tr><td>private</td><td><code>void</code></td><td><code>drawGameState()</code></td></tr>
+<tr><td>private</td><td><code>void</code></td><td><code>drawPlayer(Circle, Player)</code></td></tr>
+<tr><td>private</td><td><code>void</code></td><td><code>drawPuck(Puck)</code></td></tr>
+<tr><td>private</td><td><code>void</code></td><td><code>drawReplayMove(HockeyMove)</code></td></tr>
+<tr><td>private</td><td><code>String</code></td><td><code>formatTime(int)</code></td></tr>
+<tr><td>private</td><td><code>void</code></td><td><code>initialize()</code></td></tr>
+<tr><td>private</td><td><code>boolean</code></td><td><code>isMultiplayerClient()</code></td></tr>
+<tr><td>private</td><td><code>boolean</code></td><td><code>isMultiplayerHost()</code></td></tr>
+<tr><td>private</td><td><code>boolean</code></td><td><code>isMultiplayerMode()</code></td></tr>
+<tr><td>private</td><td><code>void</code></td><td><code>lambda$configureKeyboardInput$14(KeyEvent)</code></td></tr>
+<tr><td>private</td><td><code>void</code></td><td><code>lambda$configureMultiplayer$0()</code></td></tr>
+<tr><td>private</td><td><code>void</code></td><td><code>lambda$configureMultiplayer$1(GameState)</code></td></tr>
+<tr><td>private</td><td><code>void</code></td><td><code>lambda$configureMultiplayer$2(GameState)</code></td></tr>
+<tr><td>private</td><td><code>void</code></td><td><code>lambda$configureRmiChat$7(ActionEvent)</code></td></tr>
+<tr><td>private static</td><td><code>void</code></td><td><code>lambda$onSendChatMessage$4(ChatRemoteService, PlayerType, String)</code></td></tr>
+<tr><td>private</td><td><code>void</code></td><td><code>lambda$onSendChatMessage$5(Throwable)</code></td></tr>
+<tr><td>private</td><td><code>void</code></td><td><code>lambda$onSendChatMessage$6(Void, Throwable)</code></td></tr>
+<tr><td>private</td><td><code>void</code></td><td><code>lambda$readLastBinaryMove$11(HockeyMove)</code></td></tr>
+<tr><td>private</td><td><code>void</code></td><td><code>lambda$refreshChatMessages$10(List, Throwable)</code></td></tr>
+<tr><td>private</td><td><code>List</code></td><td><code>lambda$refreshChatMessages$8()</code></td></tr>
+<tr><td>private</td><td><code>void</code></td><td><code>lambda$refreshChatMessages$9(Throwable, List)</code></td></tr>
+<tr><td>private</td><td><code>void</code></td><td><code>lambda$showNetworkStatus$3(String)</code></td></tr>
+<tr><td>private</td><td><code>void</code></td><td><code>lambda$startReplay$12(List, AtomicInteger, ActionEvent)</code></td></tr>
+<tr><td>private</td><td><code>void</code></td><td><code>lambda$startReplay$13(GameStatus, ActionEvent)</code></td></tr>
+<tr><td>private</td><td><code>void</code></td><td><code>launchActivePlayer()</code></td></tr>
+<tr><td>private</td><td><code>void</code></td><td><code>launchRemotePlayer()</code></td></tr>
+<tr><td>private</td><td><code>void</code></td><td><code>onGenerateDocumentation(ActionEvent)</code></td></tr>
+<tr><td>private</td><td><code>void</code></td><td><code>onLoadGame(ActionEvent)</code></td></tr>
+<tr><td>private</td><td><code>void</code></td><td><code>onNewGame(ActionEvent)</code></td></tr>
+<tr><td>private</td><td><code>void</code></td><td><code>onPauseGame(ActionEvent)</code></td></tr>
+<tr><td>private</td><td><code>void</code></td><td><code>onReplay(ActionEvent)</code></td></tr>
+<tr><td>private</td><td><code>void</code></td><td><code>onSaveGame(ActionEvent)</code></td></tr>
+<tr><td>private</td><td><code>void</code></td><td><code>onSendChatMessage(ActionEvent)</code></td></tr>
+<tr><td>private</td><td><code>void</code></td><td><code>onStartGame(ActionEvent)</code></td></tr>
+<tr><td>private</td><td><code>String</code></td><td><code>playerName(PlayerType)</code></td></tr>
+<tr><td>private</td><td><code>void</code></td><td><code>readLastBinaryMove()</code></td></tr>
+<tr><td>private</td><td><code>void</code></td><td><code>refreshChatMessages()</code></td></tr>
+<tr><td>private</td><td><code>void</code></td><td><code>resetMoveHistory()</code></td></tr>
+<tr><td>private</td><td><code>void</code></td><td><code>saveMoveEvent(HockeyMove)</code></td></tr>
+<tr><td>private</td><td><code>void</code></td><td><code>savePendingMoveEvents()</code></td></tr>
+<tr><td>private</td><td><code>void</code></td><td><code>setControlsDisabledForReplay(boolean)</code></td></tr>
+<tr><td>private</td><td><code>void</code></td><td><code>showConfigurationInfo()</code></td></tr>
+<tr><td>private</td><td><code>void</code></td><td><code>showNetworkStatus(String)</code></td></tr>
+<tr><td>public</td><td><code>void</code></td><td><code>shutdown()</code></td></tr>
+<tr><td>private</td><td><code>void</code></td><td><code>startGameLoop()</code></td></tr>
+<tr><td>private</td><td><code>void</code></td><td><code>startReplay()</code></td></tr>
+<tr><td>private</td><td><code>void</code></td><td><code>stopGameLoop()</code></td></tr>
+<tr><td>private</td><td><code>void</code></td><td><code>updateControlAvailability()</code></td></tr>
+<tr><td>private</td><td><code>void</code></td><td><code>updateStatusLabel()</code></td></tr>
+<tr><td>private</td><td><code>void</code></td><td><code>updateTimer(long)</code></td></tr>
+</table>
+</section>
+<section>
+<h2>hr.algebra.hockey.utils.GameUtils</h2>
+<p><strong>Type:</strong> class</p>
+<p><strong>Superclass:</strong> <code>java.lang.Object</code></p>
+<h3>Constructors</h3>
+<table><tr><th>Modifier</th><th>Signature</th></tr>
+<tr><td>public</td><td><code>hr.algebra.hockey.utils.GameUtils()</code></td></tr>
+<tr><td>public</td><td><code>hr.algebra.hockey.utils.GameUtils(GameState)</code></td></tr>
+<tr><td>public</td><td><code>hr.algebra.hockey.utils.GameUtils(PlayerType)</code></td></tr>
+</table>
+<h3>Fields</h3>
+<table><tr><th>Modifier</th><th>Type</th><th>Name</th></tr>
+<tr><td>private static final</td><td><code>double</code></td><td>DEFAULT_AIM_ROTATION_SPEED</td></tr>
+<tr><td>private static final</td><td><code>double</code></td><td>FULL_CIRCLE_RADIANS</td></tr>
+<tr><td>private static final</td><td><code>double</code></td><td>GOAL_MAX_Y</td></tr>
+<tr><td>private static final</td><td><code>double</code></td><td>GOAL_MIN_Y</td></tr>
+<tr><td>private static final</td><td><code>Logger</code></td><td>LOGGER</td></tr>
+<tr><td>private static final</td><td><code>double</code></td><td>PLAYER_FRICTION</td></tr>
+<tr><td>private static final</td><td><code>double</code></td><td>PUCK_FRICTION</td></tr>
+<tr><td>private static final</td><td><code>double</code></td><td>RINK_MAX_X</td></tr>
+<tr><td>private static final</td><td><code>double</code></td><td>RINK_MAX_Y</td></tr>
+<tr><td>private static final</td><td><code>double</code></td><td>RINK_MIN_X</td></tr>
+<tr><td>private static final</td><td><code>double</code></td><td>RINK_MIN_Y</td></tr>
+<tr><td>private static final</td><td><code>Path</code></td><td>SAVE_GAME_PATH</td></tr>
+<tr><td>private static final</td><td><code>double</code></td><td>SINGLE_PLAYER_OPPONENT_SPEED</td></tr>
+<tr><td>private final</td><td><code>GameState</code></td><td>gameState</td></tr>
+<tr><td>private final</td><td><code>List</code></td><td>pendingMoveEvents</td></tr>
+<tr><td>private</td><td><code>int</code></td><td>singlePlayerOpponentDirection</td></tr>
+</table>
+<h3>Methods</h3>
+<table><tr><th>Modifier</th><th>Return</th><th>Signature</th></tr>
+<tr><td>private</td><td><code>void</code></td><td><code>addMoveEvent(HockeyMoveType, PlayerType)</code></td></tr>
+<tr><td>public</td><td><code>void</code></td><td><code>applyNetworkState(GameState)</code></td></tr>
+<tr><td>private</td><td><code>void</code></td><td><code>bouncePuckFromWalls(Puck)</code></td></tr>
+<tr><td>public</td><td><code>List</code></td><td><code>drainMoveEvents()</code></td></tr>
+<tr><td>public</td><td><code>void</code></td><td><code>finishGameByTimer()</code></td></tr>
+<tr><td>public</td><td><code>GameState</code></td><td><code>getGameState()</code></td></tr>
+<tr><td>private</td><td><code>boolean</code></td><td><code>handleGoalIfScored(Puck)</code></td></tr>
+<tr><td>private</td><td><code>void</code></td><td><code>handlePlayerPuckImpact(Player, Puck)</code></td></tr>
+<tr><td>private</td><td><code>void</code></td><td><code>handleSinglePlayerOpponentPuckImpact(Player, Puck)</code></td></tr>
+<tr><td>public</td><td><code>boolean</code></td><td><code>isPhysicsSettled()</code></td></tr>
+<tr><td>private</td><td><code>boolean</code></td><td><code>isSinglePlayerMode()</code></td></tr>
+<tr><td>private</td><td><code>boolean</code></td><td><code>isTurnMovementSettled()</code></td></tr>
+<tr><td>public</td><td><code>void</code></td><td><code>launchActivePlayer()</code></td></tr>
+<tr><td>public static</td><td><code>GameState</code></td><td><code>loadGame()</code></td></tr>
+<tr><td>public</td><td><code>void</code></td><td><code>loadGameState(GameState)</code></td></tr>
+<tr><td>private</td><td><code>void</code></td><td><code>moveSinglePlayerOpponent()</code></td></tr>
+<tr><td>private</td><td><code>double</code></td><td><code>normalizeAngle(double)</code></td></tr>
+<tr><td>public</td><td><code>void</code></td><td><code>pauseGame()</code></td></tr>
+<tr><td>private</td><td><code>void</code></td><td><code>prepareModeDefaults()</code></td></tr>
+<tr><td>public</td><td><code>void</code></td><td><code>resumeGame()</code></td></tr>
+<tr><td>public static</td><td><code>void</code></td><td><code>saveGame(GameState)</code></td></tr>
+<tr><td>public static</td><td><code>boolean</code></td><td><code>saveGameExists()</code></td></tr>
+<tr><td>private</td><td><code>void</code></td><td><code>scoreFor(PlayerType)</code></td></tr>
+<tr><td>public</td><td><code>void</code></td><td><code>startNewGame()</code></td></tr>
+<tr><td>public</td><td><code>void</code></td><td><code>switchTurn()</code></td></tr>
+<tr><td>public</td><td><code>void</code></td><td><code>tickTimer()</code></td></tr>
+<tr><td>public</td><td><code>void</code></td><td><code>updateAimAngle()</code></td></tr>
+<tr><td>public</td><td><code>void</code></td><td><code>updateAimAngle(double)</code></td></tr>
+<tr><td>public</td><td><code>void</code></td><td><code>updateFrame()</code></td></tr>
+</table>
+</section>
+<section>
+<h2>hr.algebra.hockey.engine.CollisionService</h2>
+<p><strong>Type:</strong> class</p>
+<p><strong>Superclass:</strong> <code>java.lang.Object</code></p>
+<h3>Constructors</h3>
+<table><tr><th>Modifier</th><th>Signature</th></tr>
+<tr><td>private</td><td><code>hr.algebra.hockey.engine.CollisionService()</code></td></tr>
+</table>
+<h3>Fields</h3>
+<table><tr><th>Modifier</th><th>Type</th><th>Name</th></tr>
+<tr><td>private static final</td><td><code>double</code></td><td>DEFAULT_STOP_THRESHOLD</td></tr>
+<tr><td>private static final</td><td><code>double</code></td><td>KINEMATIC_COLLISION_RESTITUTION</td></tr>
+<tr><td>private static final</td><td><code>double</code></td><td>MINIMUM_PUCK_IMPACT_SPEED</td></tr>
+<tr><td>private static final</td><td><code>double</code></td><td>PUCK_IMPACT_MULTIPLIER</td></tr>
+</table>
+<h3>Methods</h3>
+<table><tr><th>Modifier</th><th>Return</th><th>Signature</th></tr>
+<tr><td>private static</td><td><code>double</code></td><td><code>applyFriction(double, double)</code></td></tr>
+<tr><td>public static</td><td><code>void</code></td><td><code>applyFriction(Player, double)</code></td></tr>
+<tr><td>public static</td><td><code>void</code></td><td><code>applyFriction(Puck, double)</code></td></tr>
+<tr><td>public static</td><td><code>boolean</code></td><td><code>circlesCollide(double, double, double, double, double, double)</code></td></tr>
+<tr><td>public static</td><td><code>boolean</code></td><td><code>deflectPuckFromKinematicPlayer(Player, Puck, double, double)</code></td></tr>
+<tr><td>public static</td><td><code>double</code></td><td><code>distance(double, double, double, double)</code></td></tr>
+<tr><td>public static</td><td><code>boolean</code></td><td><code>isMoving(double, double, double)</code></td></tr>
+<tr><td>public static</td><td><code>boolean</code></td><td><code>isMoving(Player)</code></td></tr>
+<tr><td>public static</td><td><code>boolean</code></td><td><code>isMoving(Puck)</code></td></tr>
+<tr><td>public static</td><td><code>boolean</code></td><td><code>playerHitsPuck(Player, Puck)</code></td></tr>
+<tr><td>public static</td><td><code>void</code></td><td><code>stopIfSlow(Player)</code></td></tr>
+<tr><td>public static</td><td><code>void</code></td><td><code>stopIfSlow(Puck)</code></td></tr>
+<tr><td>public static</td><td><code>void</code></td><td><code>transferPlayerImpactToPuck(Player, Puck)</code></td></tr>
+</table>
+</section>
+<section>
+<h2>hr.algebra.hockey.exception.ChatActionException</h2>
+<p><strong>Type:</strong> class</p>
+<p><strong>Superclass:</strong> <code>java.lang.RuntimeException</code></p>
+<h3>Constructors</h3>
+<table><tr><th>Modifier</th><th>Signature</th></tr>
+<tr><td>public</td><td><code>hr.algebra.hockey.exception.ChatActionException(String, Throwable)</code></td></tr>
+</table>
+<h3>Fields</h3>
+<table><tr><th>Modifier</th><th>Type</th><th>Name</th></tr>
+</table>
+<h3>Methods</h3>
+<table><tr><th>Modifier</th><th>Return</th><th>Signature</th></tr>
+</table>
+</section>
+<section>
+<h2>hr.algebra.hockey.model.GameState</h2>
+<p><strong>Type:</strong> class</p>
+<p><strong>Superclass:</strong> <code>java.lang.Object</code></p>
+<p><strong>Interfaces:</strong> java.io.Serializable</p>
+<h3>Constructors</h3>
+<table><tr><th>Modifier</th><th>Signature</th></tr>
+<tr><td>public</td><td><code>hr.algebra.hockey.model.GameState()</code></td></tr>
+</table>
+<h3>Fields</h3>
+<table><tr><th>Modifier</th><th>Type</th><th>Name</th></tr>
+<tr><td>private</td><td><code>PlayerType</code></td><td>activePlayer</td></tr>
+<tr><td>private</td><td><code>double</code></td><td>aimAngleRadians</td></tr>
+<tr><td>private</td><td><code>GameStatus</code></td><td>gameStatus</td></tr>
+<tr><td>private</td><td><code>PlayerType</code></td><td>lastScoringPlayer</td></tr>
+<tr><td>private</td><td><code>PlayerType</code></td><td>localPlayerType</td></tr>
+<tr><td>private</td><td><code>Player</code></td><td>playerOne</td></tr>
+<tr><td>private</td><td><code>Player</code></td><td>playerTwo</td></tr>
+<tr><td>private</td><td><code>Puck</code></td><td>puck</td></tr>
+<tr><td>private static final</td><td><code>long</code></td><td>serialVersionUID</td></tr>
+<tr><td>private</td><td><code>int</code></td><td>timeLeft</td></tr>
+<tr><td>private</td><td><code>PlayerType</code></td><td>winner</td></tr>
+<tr><td>private</td><td><code>int</code></td><td>winningScore</td></tr>
+</table>
+<h3>Methods</h3>
+<table><tr><th>Modifier</th><th>Return</th><th>Signature</th></tr>
+<tr><td>public</td><td><code>PlayerType</code></td><td><code>calculateScoreLeader()</code></td></tr>
+<tr><td>public</td><td><code>PlayerType</code></td><td><code>calculateWinner()</code></td></tr>
+<tr><td>public</td><td><code>void</code></td><td><code>copyFrom(GameState)</code></td></tr>
+<tr><td>private static</td><td><code>Player</code></td><td><code>copyPlayer(Player)</code></td></tr>
+<tr><td>private static</td><td><code>Puck</code></td><td><code>copyPuck(Puck)</code></td></tr>
+<tr><td>public</td><td><code>GameState</code></td><td><code>createSnapshot()</code></td></tr>
+<tr><td>public</td><td><code>PlayerType</code></td><td><code>getActivePlayer()</code></td></tr>
+<tr><td>public</td><td><code>Player</code></td><td><code>getActivePlayerModel()</code></td></tr>
+<tr><td>public</td><td><code>double</code></td><td><code>getAimAngleRadians()</code></td></tr>
+<tr><td>public</td><td><code>GameStatus</code></td><td><code>getGameStatus()</code></td></tr>
+<tr><td>public</td><td><code>Player</code></td><td><code>getInactivePlayerModel()</code></td></tr>
+<tr><td>public</td><td><code>PlayerType</code></td><td><code>getLastScoringPlayer()</code></td></tr>
+<tr><td>public</td><td><code>PlayerType</code></td><td><code>getLocalPlayerType()</code></td></tr>
+<tr><td>public</td><td><code>Player</code></td><td><code>getPlayerOne()</code></td></tr>
+<tr><td>public</td><td><code>Player</code></td><td><code>getPlayerTwo()</code></td></tr>
+<tr><td>public</td><td><code>Puck</code></td><td><code>getPuck()</code></td></tr>
+<tr><td>public</td><td><code>int</code></td><td><code>getTimeLeft()</code></td></tr>
+<tr><td>public</td><td><code>PlayerType</code></td><td><code>getWinner()</code></td></tr>
+<tr><td>public</td><td><code>int</code></td><td><code>getWinningScore()</code></td></tr>
+<tr><td>public</td><td><code>boolean</code></td><td><code>hasWinner()</code></td></tr>
+<tr><td>public</td><td><code>void</code></td><td><code>resetForNewGame()</code></td></tr>
+<tr><td>public</td><td><code>void</code></td><td><code>resetPositionsAfterGoal()</code></td></tr>
+<tr><td>public</td><td><code>void</code></td><td><code>setActivePlayer(PlayerType)</code></td></tr>
+<tr><td>public</td><td><code>void</code></td><td><code>setAimAngleRadians(double)</code></td></tr>
+<tr><td>public</td><td><code>void</code></td><td><code>setGameStatus(GameStatus)</code></td></tr>
+<tr><td>public</td><td><code>void</code></td><td><code>setLastScoringPlayer(PlayerType)</code></td></tr>
+<tr><td>public</td><td><code>void</code></td><td><code>setLocalPlayerType(PlayerType)</code></td></tr>
+<tr><td>public</td><td><code>void</code></td><td><code>setPlayerOne(Player)</code></td></tr>
+<tr><td>public</td><td><code>void</code></td><td><code>setPlayerTwo(Player)</code></td></tr>
+<tr><td>public</td><td><code>void</code></td><td><code>setPuck(Puck)</code></td></tr>
+<tr><td>public</td><td><code>void</code></td><td><code>setTimeLeft(int)</code></td></tr>
+<tr><td>public</td><td><code>void</code></td><td><code>setWinner(PlayerType)</code></td></tr>
+<tr><td>public</td><td><code>void</code></td><td><code>setWinningScore(int)</code></td></tr>
+<tr><td>public</td><td><code>void</code></td><td><code>switchTurn()</code></td></tr>
+</table>
+</section>
+<section>
+<h2>hr.algebra.hockey.model.GameStatus</h2>
+<p><strong>Type:</strong> enum</p>
+<p><strong>Superclass:</strong> <code>java.lang.Enum</code></p>
+<h3>Constructors</h3>
+<table><tr><th>Modifier</th><th>Signature</th></tr>
+<tr><td>private</td><td><code>hr.algebra.hockey.model.GameStatus(String, int)</code></td></tr>
+</table>
+<h3>Fields</h3>
+<table><tr><th>Modifier</th><th>Type</th><th>Name</th></tr>
+<tr><td>private static final</td><td><code>GameStatus[]</code></td><td>$VALUES</td></tr>
+<tr><td>public static final</td><td><code>GameStatus</code></td><td>FINISHED</td></tr>
+<tr><td>public static final</td><td><code>GameStatus</code></td><td>LAUNCHING</td></tr>
+<tr><td>public static final</td><td><code>GameStatus</code></td><td>PAUSED</td></tr>
+<tr><td>public static final</td><td><code>GameStatus</code></td><td>PUCK_MOVING</td></tr>
+<tr><td>public static final</td><td><code>GameStatus</code></td><td>READY</td></tr>
+<tr><td>public static final</td><td><code>GameStatus</code></td><td>REPLAYING</td></tr>
+<tr><td>public static final</td><td><code>GameStatus</code></td><td>RUNNING</td></tr>
+<tr><td>public static final</td><td><code>GameStatus</code></td><td>TURN_SWITCHING</td></tr>
+</table>
+<h3>Methods</h3>
+<table><tr><th>Modifier</th><th>Return</th><th>Signature</th></tr>
+<tr><td>private static</td><td><code>GameStatus[]</code></td><td><code>$values()</code></td></tr>
+<tr><td>public static</td><td><code>GameStatus</code></td><td><code>valueOf(String)</code></td></tr>
+<tr><td>public static</td><td><code>GameStatus[]</code></td><td><code>values()</code></td></tr>
+</table>
+</section>
+<section>
+<h2>hr.algebra.hockey.model.HockeyMove</h2>
+<p><strong>Type:</strong> class</p>
+<p><strong>Superclass:</strong> <code>java.lang.Object</code></p>
+<p><strong>Interfaces:</strong> java.io.Serializable</p>
+<h3>Constructors</h3>
+<table><tr><th>Modifier</th><th>Signature</th></tr>
+<tr><td>public</td><td><code>hr.algebra.hockey.model.HockeyMove()</code></td></tr>
+<tr><td>public</td><td><code>hr.algebra.hockey.model.HockeyMove(HockeyMoveType, PlayerType, GameState)</code></td></tr>
+</table>
+<h3>Fields</h3>
+<table><tr><th>Modifier</th><th>Type</th><th>Name</th></tr>
+<tr><td>private</td><td><code>HockeyMoveType</code></td><td>moveType</td></tr>
+<tr><td>private</td><td><code>int</code></td><td>playerOneScore</td></tr>
+<tr><td>private</td><td><code>double</code></td><td>playerOneX</td></tr>
+<tr><td>private</td><td><code>double</code></td><td>playerOneY</td></tr>
+<tr><td>private</td><td><code>int</code></td><td>playerTwoScore</td></tr>
+<tr><td>private</td><td><code>double</code></td><td>playerTwoX</td></tr>
+<tr><td>private</td><td><code>double</code></td><td>playerTwoY</td></tr>
+<tr><td>private</td><td><code>PlayerType</code></td><td>playerType</td></tr>
+<tr><td>private</td><td><code>double</code></td><td>puckX</td></tr>
+<tr><td>private</td><td><code>double</code></td><td>puckY</td></tr>
+<tr><td>private static final</td><td><code>long</code></td><td>serialVersionUID</td></tr>
+<tr><td>private</td><td><code>int</code></td><td>timeLeft</td></tr>
+<tr><td>private</td><td><code>LocalDateTime</code></td><td>timestamp</td></tr>
+</table>
+<h3>Methods</h3>
+<table><tr><th>Modifier</th><th>Return</th><th>Signature</th></tr>
+<tr><td>protected</td><td><code>boolean</code></td><td><code>canEqual(Object)</code></td></tr>
+<tr><td>public</td><td><code>boolean</code></td><td><code>equals(Object)</code></td></tr>
+<tr><td>public</td><td><code>HockeyMoveType</code></td><td><code>getMoveType()</code></td></tr>
+<tr><td>public</td><td><code>int</code></td><td><code>getPlayerOneScore()</code></td></tr>
+<tr><td>public</td><td><code>double</code></td><td><code>getPlayerOneX()</code></td></tr>
+<tr><td>public</td><td><code>double</code></td><td><code>getPlayerOneY()</code></td></tr>
+<tr><td>public</td><td><code>int</code></td><td><code>getPlayerTwoScore()</code></td></tr>
+<tr><td>public</td><td><code>double</code></td><td><code>getPlayerTwoX()</code></td></tr>
+<tr><td>public</td><td><code>double</code></td><td><code>getPlayerTwoY()</code></td></tr>
+<tr><td>public</td><td><code>PlayerType</code></td><td><code>getPlayerType()</code></td></tr>
+<tr><td>public</td><td><code>double</code></td><td><code>getPuckX()</code></td></tr>
+<tr><td>public</td><td><code>double</code></td><td><code>getPuckY()</code></td></tr>
+<tr><td>public</td><td><code>int</code></td><td><code>getTimeLeft()</code></td></tr>
+<tr><td>public</td><td><code>LocalDateTime</code></td><td><code>getTimestamp()</code></td></tr>
+<tr><td>public</td><td><code>int</code></td><td><code>hashCode()</code></td></tr>
+<tr><td>public</td><td><code>void</code></td><td><code>setMoveType(HockeyMoveType)</code></td></tr>
+<tr><td>public</td><td><code>void</code></td><td><code>setPlayerOneScore(int)</code></td></tr>
+<tr><td>public</td><td><code>void</code></td><td><code>setPlayerOneX(double)</code></td></tr>
+<tr><td>public</td><td><code>void</code></td><td><code>setPlayerOneY(double)</code></td></tr>
+<tr><td>public</td><td><code>void</code></td><td><code>setPlayerTwoScore(int)</code></td></tr>
+<tr><td>public</td><td><code>void</code></td><td><code>setPlayerTwoX(double)</code></td></tr>
+<tr><td>public</td><td><code>void</code></td><td><code>setPlayerTwoY(double)</code></td></tr>
+<tr><td>public</td><td><code>void</code></td><td><code>setPlayerType(PlayerType)</code></td></tr>
+<tr><td>public</td><td><code>void</code></td><td><code>setPuckX(double)</code></td></tr>
+<tr><td>public</td><td><code>void</code></td><td><code>setPuckY(double)</code></td></tr>
+<tr><td>public</td><td><code>void</code></td><td><code>setTimeLeft(int)</code></td></tr>
+<tr><td>public</td><td><code>void</code></td><td><code>setTimestamp(LocalDateTime)</code></td></tr>
+<tr><td>public</td><td><code>String</code></td><td><code>toString()</code></td></tr>
+</table>
+</section>
+<section>
+<h2>hr.algebra.hockey.model.HockeyMoveTag</h2>
+<p><strong>Type:</strong> enum</p>
+<p><strong>Superclass:</strong> <code>java.lang.Enum</code></p>
+<h3>Constructors</h3>
+<table><tr><th>Modifier</th><th>Signature</th></tr>
+<tr><td>private</td><td><code>hr.algebra.hockey.model.HockeyMoveTag(String, int, String)</code></td></tr>
+</table>
+<h3>Fields</h3>
+<table><tr><th>Modifier</th><th>Type</th><th>Name</th></tr>
+<tr><td>private static final</td><td><code>HockeyMoveTag[]</code></td><td>$VALUES</td></tr>
+<tr><td>public static final</td><td><code>HockeyMoveTag</code></td><td>GAME_MOVES</td></tr>
+<tr><td>public static final</td><td><code>HockeyMoveTag</code></td><td>HOCKEY_MOVE</td></tr>
+<tr><td>public static final</td><td><code>HockeyMoveTag</code></td><td>MOVE_TYPE</td></tr>
+<tr><td>public static final</td><td><code>HockeyMoveTag</code></td><td>PLAYER_ONE_SCORE</td></tr>
+<tr><td>public static final</td><td><code>HockeyMoveTag</code></td><td>PLAYER_ONE_X</td></tr>
+<tr><td>public static final</td><td><code>HockeyMoveTag</code></td><td>PLAYER_ONE_Y</td></tr>
+<tr><td>public static final</td><td><code>HockeyMoveTag</code></td><td>PLAYER_TWO_SCORE</td></tr>
+<tr><td>public static final</td><td><code>HockeyMoveTag</code></td><td>PLAYER_TWO_X</td></tr>
+<tr><td>public static final</td><td><code>HockeyMoveTag</code></td><td>PLAYER_TWO_Y</td></tr>
+<tr><td>public static final</td><td><code>HockeyMoveTag</code></td><td>PLAYER_TYPE</td></tr>
+<tr><td>public static final</td><td><code>HockeyMoveTag</code></td><td>PUCK_X</td></tr>
+<tr><td>public static final</td><td><code>HockeyMoveTag</code></td><td>PUCK_Y</td></tr>
+<tr><td>public static final</td><td><code>HockeyMoveTag</code></td><td>TIMESTAMP</td></tr>
+<tr><td>public static final</td><td><code>HockeyMoveTag</code></td><td>TIME_LEFT</td></tr>
+<tr><td>private final</td><td><code>String</code></td><td>tagName</td></tr>
+</table>
+<h3>Methods</h3>
+<table><tr><th>Modifier</th><th>Return</th><th>Signature</th></tr>
+<tr><td>private static</td><td><code>HockeyMoveTag[]</code></td><td><code>$values()</code></td></tr>
+<tr><td>public</td><td><code>String</code></td><td><code>getTagName()</code></td></tr>
+<tr><td>public static</td><td><code>HockeyMoveTag</code></td><td><code>valueOf(String)</code></td></tr>
+<tr><td>public static</td><td><code>HockeyMoveTag[]</code></td><td><code>values()</code></td></tr>
+</table>
+</section>
+<section>
+<h2>hr.algebra.hockey.model.HockeyMoveType</h2>
+<p><strong>Type:</strong> enum</p>
+<p><strong>Superclass:</strong> <code>java.lang.Enum</code></p>
+<h3>Constructors</h3>
+<table><tr><th>Modifier</th><th>Signature</th></tr>
+<tr><td>private</td><td><code>hr.algebra.hockey.model.HockeyMoveType(String, int)</code></td></tr>
+</table>
+<h3>Fields</h3>
+<table><tr><th>Modifier</th><th>Type</th><th>Name</th></tr>
+<tr><td>private static final</td><td><code>HockeyMoveType[]</code></td><td>$VALUES</td></tr>
+<tr><td>public static final</td><td><code>HockeyMoveType</code></td><td>GAME_OVER</td></tr>
+<tr><td>public static final</td><td><code>HockeyMoveType</code></td><td>GAME_START</td></tr>
+<tr><td>public static final</td><td><code>HockeyMoveType</code></td><td>GOAL</td></tr>
+<tr><td>public static final</td><td><code>HockeyMoveType</code></td><td>LAUNCH</td></tr>
+<tr><td>public static final</td><td><code>HockeyMoveType</code></td><td>PUCK_HIT</td></tr>
+</table>
+<h3>Methods</h3>
+<table><tr><th>Modifier</th><th>Return</th><th>Signature</th></tr>
+<tr><td>private static</td><td><code>HockeyMoveType[]</code></td><td><code>$values()</code></td></tr>
+<tr><td>public static</td><td><code>HockeyMoveType</code></td><td><code>valueOf(String)</code></td></tr>
+<tr><td>public static</td><td><code>HockeyMoveType[]</code></td><td><code>values()</code></td></tr>
+</table>
+</section>
+<section>
+<h2>hr.algebra.hockey.model.Player</h2>
+<p><strong>Type:</strong> class</p>
+<p><strong>Superclass:</strong> <code>java.lang.Object</code></p>
+<p><strong>Interfaces:</strong> java.io.Serializable</p>
+<h3>Constructors</h3>
+<table><tr><th>Modifier</th><th>Signature</th></tr>
+<tr><td>public</td><td><code>hr.algebra.hockey.model.Player()</code></td></tr>
+<tr><td>public</td><td><code>hr.algebra.hockey.model.Player(PlayerType, double, double, double, double)</code></td></tr>
+</table>
+<h3>Fields</h3>
+<table><tr><th>Modifier</th><th>Type</th><th>Name</th></tr>
+<tr><td>private</td><td><code>double</code></td><td>launchPower</td></tr>
+<tr><td>private</td><td><code>PlayerType</code></td><td>playerType</td></tr>
+<tr><td>private</td><td><code>double</code></td><td>radius</td></tr>
+<tr><td>private</td><td><code>int</code></td><td>score</td></tr>
+<tr><td>private static final</td><td><code>long</code></td><td>serialVersionUID</td></tr>
+<tr><td>private</td><td><code>double</code></td><td>velocityX</td></tr>
+<tr><td>private</td><td><code>double</code></td><td>velocityY</td></tr>
+<tr><td>private</td><td><code>double</code></td><td>x</td></tr>
+<tr><td>private</td><td><code>double</code></td><td>y</td></tr>
+</table>
+<h3>Methods</h3>
+<table><tr><th>Modifier</th><th>Return</th><th>Signature</th></tr>
+<tr><td>public</td><td><code>double</code></td><td><code>getLaunchPower()</code></td></tr>
+<tr><td>public</td><td><code>PlayerType</code></td><td><code>getPlayerType()</code></td></tr>
+<tr><td>public</td><td><code>double</code></td><td><code>getRadius()</code></td></tr>
+<tr><td>public</td><td><code>int</code></td><td><code>getScore()</code></td></tr>
+<tr><td>public</td><td><code>double</code></td><td><code>getVelocityX()</code></td></tr>
+<tr><td>public</td><td><code>double</code></td><td><code>getVelocityY()</code></td></tr>
+<tr><td>public</td><td><code>double</code></td><td><code>getX()</code></td></tr>
+<tr><td>public</td><td><code>double</code></td><td><code>getY()</code></td></tr>
+<tr><td>public</td><td><code>boolean</code></td><td><code>isMoving()</code></td></tr>
+<tr><td>public</td><td><code>void</code></td><td><code>launch(double)</code></td></tr>
+<tr><td>public</td><td><code>void</code></td><td><code>move()</code></td></tr>
+<tr><td>public</td><td><code>void</code></td><td><code>reset(double, double)</code></td></tr>
+<tr><td>public</td><td><code>void</code></td><td><code>setLaunchPower(double)</code></td></tr>
+<tr><td>public</td><td><code>void</code></td><td><code>setPlayerType(PlayerType)</code></td></tr>
+<tr><td>public</td><td><code>void</code></td><td><code>setRadius(double)</code></td></tr>
+<tr><td>public</td><td><code>void</code></td><td><code>setScore(int)</code></td></tr>
+<tr><td>public</td><td><code>void</code></td><td><code>setVelocityX(double)</code></td></tr>
+<tr><td>public</td><td><code>void</code></td><td><code>setVelocityY(double)</code></td></tr>
+<tr><td>public</td><td><code>void</code></td><td><code>setX(double)</code></td></tr>
+<tr><td>public</td><td><code>void</code></td><td><code>setY(double)</code></td></tr>
+<tr><td>public</td><td><code>void</code></td><td><code>stop()</code></td></tr>
+</table>
+</section>
+<section>
+<h2>hr.algebra.hockey.model.PlayerType</h2>
+<p><strong>Type:</strong> enum</p>
+<p><strong>Superclass:</strong> <code>java.lang.Enum</code></p>
+<h3>Constructors</h3>
+<table><tr><th>Modifier</th><th>Signature</th></tr>
+<tr><td>private</td><td><code>hr.algebra.hockey.model.PlayerType(String, int)</code></td></tr>
+</table>
+<h3>Fields</h3>
+<table><tr><th>Modifier</th><th>Type</th><th>Name</th></tr>
+<tr><td>private static final</td><td><code>PlayerType[]</code></td><td>$VALUES</td></tr>
+<tr><td>public static final</td><td><code>PlayerType</code></td><td>PLAYER_1</td></tr>
+<tr><td>public static final</td><td><code>PlayerType</code></td><td>PLAYER_2</td></tr>
+<tr><td>public static final</td><td><code>PlayerType</code></td><td>SINGLE_PLAYER</td></tr>
+</table>
+<h3>Methods</h3>
+<table><tr><th>Modifier</th><th>Return</th><th>Signature</th></tr>
+<tr><td>private static</td><td><code>PlayerType[]</code></td><td><code>$values()</code></td></tr>
+<tr><td>public static</td><td><code>PlayerType</code></td><td><code>valueOf(String)</code></td></tr>
+<tr><td>public static</td><td><code>PlayerType[]</code></td><td><code>values()</code></td></tr>
+</table>
+</section>
+<section>
+<h2>hr.algebra.hockey.model.Puck</h2>
+<p><strong>Type:</strong> class</p>
+<p><strong>Superclass:</strong> <code>java.lang.Object</code></p>
+<p><strong>Interfaces:</strong> java.io.Serializable</p>
+<h3>Constructors</h3>
+<table><tr><th>Modifier</th><th>Signature</th></tr>
+<tr><td>public</td><td><code>hr.algebra.hockey.model.Puck()</code></td></tr>
+<tr><td>public</td><td><code>hr.algebra.hockey.model.Puck(double, double, double)</code></td></tr>
+</table>
+<h3>Fields</h3>
+<table><tr><th>Modifier</th><th>Type</th><th>Name</th></tr>
+<tr><td>private</td><td><code>double</code></td><td>radius</td></tr>
+<tr><td>private static final</td><td><code>long</code></td><td>serialVersionUID</td></tr>
+<tr><td>private</td><td><code>double</code></td><td>velocityX</td></tr>
+<tr><td>private</td><td><code>double</code></td><td>velocityY</td></tr>
+<tr><td>private</td><td><code>double</code></td><td>x</td></tr>
+<tr><td>private</td><td><code>double</code></td><td>y</td></tr>
+</table>
+<h3>Methods</h3>
+<table><tr><th>Modifier</th><th>Return</th><th>Signature</th></tr>
+<tr><td>public</td><td><code>double</code></td><td><code>getRadius()</code></td></tr>
+<tr><td>public</td><td><code>double</code></td><td><code>getVelocityX()</code></td></tr>
+<tr><td>public</td><td><code>double</code></td><td><code>getVelocityY()</code></td></tr>
+<tr><td>public</td><td><code>double</code></td><td><code>getX()</code></td></tr>
+<tr><td>public</td><td><code>double</code></td><td><code>getY()</code></td></tr>
+<tr><td>public</td><td><code>boolean</code></td><td><code>isMoving()</code></td></tr>
+<tr><td>public</td><td><code>void</code></td><td><code>move()</code></td></tr>
+<tr><td>public</td><td><code>void</code></td><td><code>reset(double, double)</code></td></tr>
+<tr><td>public</td><td><code>void</code></td><td><code>setRadius(double)</code></td></tr>
+<tr><td>public</td><td><code>void</code></td><td><code>setVelocityX(double)</code></td></tr>
+<tr><td>public</td><td><code>void</code></td><td><code>setVelocityY(double)</code></td></tr>
+<tr><td>public</td><td><code>void</code></td><td><code>setX(double)</code></td></tr>
+<tr><td>public</td><td><code>void</code></td><td><code>setY(double)</code></td></tr>
+<tr><td>public</td><td><code>void</code></td><td><code>stop()</code></td></tr>
+</table>
+</section>
+<section>
+<h2>hr.algebra.hockey.network.MultiplayerMessage</h2>
+<p><strong>Type:</strong> class</p>
+<p><strong>Superclass:</strong> <code>java.lang.Object</code></p>
+<p><strong>Interfaces:</strong> java.io.Serializable</p>
+<h3>Constructors</h3>
+<table><tr><th>Modifier</th><th>Signature</th></tr>
+<tr><td>private</td><td><code>hr.algebra.hockey.network.MultiplayerMessage(Type, GameState)</code></td></tr>
+</table>
+<h3>Fields</h3>
+<table><tr><th>Modifier</th><th>Type</th><th>Name</th></tr>
+<tr><td>private final</td><td><code>GameState</code></td><td>gameState</td></tr>
+<tr><td>private static final</td><td><code>long</code></td><td>serialVersionUID</td></tr>
+<tr><td>private final</td><td><code>Type</code></td><td>type</td></tr>
+</table>
+<h3>Methods</h3>
+<table><tr><th>Modifier</th><th>Return</th><th>Signature</th></tr>
+<tr><td>public static</td><td><code>MultiplayerMessage</code></td><td><code>gameState(GameState)</code></td></tr>
+<tr><td>public</td><td><code>GameState</code></td><td><code>getGameState()</code></td></tr>
+<tr><td>public</td><td><code>Type</code></td><td><code>getType()</code></td></tr>
+<tr><td>public static</td><td><code>MultiplayerMessage</code></td><td><code>launchRequest()</code></td></tr>
+</table>
+</section>
+<section>
+<h2>hr.algebra.hockey.network.SocketMultiplayerService</h2>
+<p><strong>Type:</strong> class</p>
+<p><strong>Superclass:</strong> <code>java.lang.Object</code></p>
+<p><strong>Interfaces:</strong> java.lang.AutoCloseable</p>
+<h3>Constructors</h3>
+<table><tr><th>Modifier</th><th>Signature</th></tr>
+<tr><td>private</td><td><code>hr.algebra.hockey.network.SocketMultiplayerService(boolean, String, int, Consumer, Runnable, Consumer)</code></td></tr>
+</table>
+<h3>Fields</h3>
+<table><tr><th>Modifier</th><th>Type</th><th>Name</th></tr>
+<tr><td>private static final</td><td><code>Logger</code></td><td>LOGGER</td></tr>
+<tr><td>private static final</td><td><code>int</code></td><td>OUTBOUND_QUEUE_CAPACITY</td></tr>
+<tr><td>private static final</td><td><code>int</code></td><td>RETRY_DELAY_MILLISECONDS</td></tr>
+<tr><td>private volatile</td><td><code>boolean</code></td><td>connected</td></tr>
+<tr><td>private final</td><td><code>Consumer</code></td><td>gameStateConsumer</td></tr>
+<tr><td>private final</td><td><code>boolean</code></td><td>host</td></tr>
+<tr><td>private final</td><td><code>String</code></td><td>hostName</td></tr>
+<tr><td>private final</td><td><code>Runnable</code></td><td>launchRequestHandler</td></tr>
+<tr><td>private final</td><td><code>BlockingQueue</code></td><td>outboundMessages</td></tr>
+<tr><td>private final</td><td><code>int</code></td><td>port</td></tr>
+<tr><td>private volatile</td><td><code>boolean</code></td><td>running</td></tr>
+<tr><td>private</td><td><code>ServerSocket</code></td><td>serverSocket</td></tr>
+<tr><td>private</td><td><code>Socket</code></td><td>socket</td></tr>
+<tr><td>private final</td><td><code>Consumer</code></td><td>statusConsumer</td></tr>
+</table>
+<h3>Methods</h3>
+<table><tr><th>Modifier</th><th>Return</th><th>Signature</th></tr>
+<tr><td>public</td><td><code>void</code></td><td><code>close()</code></td></tr>
+<tr><td>private</td><td><code>void</code></td><td><code>closeSocketQuietly()</code></td></tr>
+<tr><td>public static</td><td><code>SocketMultiplayerService</code></td><td><code>createClient(String, int, Consumer, Consumer)</code></td></tr>
+<tr><td>public static</td><td><code>SocketMultiplayerService</code></td><td><code>createHost(int, Runnable, Consumer)</code></td></tr>
+<tr><td>private</td><td><code>Thread</code></td><td><code>createWriterThread(Socket, ObjectOutputStream)</code></td></tr>
+<tr><td>private</td><td><code>void</code></td><td><code>enqueueLatest(MultiplayerMessage)</code></td></tr>
+<tr><td>private</td><td><code>void</code></td><td><code>handleConnection(Socket)</code></td></tr>
+<tr><td>private</td><td><code>void</code></td><td><code>handleMessage(MultiplayerMessage)</code></td></tr>
+<tr><td>public</td><td><code>boolean</code></td><td><code>isConnected()</code></td></tr>
+<tr><td>private</td><td><code>void</code></td><td><code>lambda$createWriterThread$0(Socket, ObjectOutputStream)</code></td></tr>
+<tr><td>private</td><td><code>void</code></td><td><code>publishStatus(String)</code></td></tr>
+<tr><td>private</td><td><code>void</code></td><td><code>readMessages(ObjectInputStream)</code></td></tr>
+<tr><td>private</td><td><code>void</code></td><td><code>runClient()</code></td></tr>
+<tr><td>private</td><td><code>void</code></td><td><code>runHost()</code></td></tr>
+<tr><td>public</td><td><code>void</code></td><td><code>sendGameState(GameState)</code></td></tr>
+<tr><td>public</td><td><code>void</code></td><td><code>sendLaunchRequest()</code></td></tr>
+<tr><td>private</td><td><code>void</code></td><td><code>sleepBeforeRetry()</code></td></tr>
+<tr><td>public</td><td><code>void</code></td><td><code>start()</code></td></tr>
+</table>
+</section>
+<section>
+<h2>hr.algebra.hockey.rmi.ChatRemoteService</h2>
+<p><strong>Type:</strong> interface</p>
+<p><strong>Interfaces:</strong> java.rmi.Remote</p>
+<h3>Constructors</h3>
+<table><tr><th>Modifier</th><th>Signature</th></tr>
+</table>
+<h3>Fields</h3>
+<table><tr><th>Modifier</th><th>Type</th><th>Name</th></tr>
+<tr><td>public static final</td><td><code>String</code></td><td>REMOTE_OBJECT_NAME</td></tr>
+</table>
+<h3>Methods</h3>
+<table><tr><th>Modifier</th><th>Return</th><th>Signature</th></tr>
+<tr><td>public abstract</td><td><code>List</code></td><td><code>getAllMessages()</code></td></tr>
+<tr><td>public abstract</td><td><code>void</code></td><td><code>sendChatMessage(String)</code></td></tr>
+</table>
+</section>
+<section>
+<h2>hr.algebra.hockey.rmi.ChatRemoteServiceImpl</h2>
+<p><strong>Type:</strong> class</p>
+<p><strong>Superclass:</strong> <code>java.lang.Object</code></p>
+<p><strong>Interfaces:</strong> hr.algebra.hockey.rmi.ChatRemoteService</p>
+<h3>Constructors</h3>
+<table><tr><th>Modifier</th><th>Signature</th></tr>
+<tr><td>public</td><td><code>hr.algebra.hockey.rmi.ChatRemoteServiceImpl()</code></td></tr>
+</table>
+<h3>Fields</h3>
+<table><tr><th>Modifier</th><th>Type</th><th>Name</th></tr>
+<tr><td>private final</td><td><code>List</code></td><td>chatMessages</td></tr>
+</table>
+<h3>Methods</h3>
+<table><tr><th>Modifier</th><th>Return</th><th>Signature</th></tr>
+<tr><td>public</td><td><code>List</code></td><td><code>getAllMessages()</code></td></tr>
+<tr><td>public</td><td><code>void</code></td><td><code>sendChatMessage(String)</code></td></tr>
+</table>
+</section>
+<section>
+<h2>hr.algebra.hockey.rmi.RmiServer</h2>
+<p><strong>Type:</strong> class</p>
+<p><strong>Superclass:</strong> <code>java.lang.Object</code></p>
+<h3>Constructors</h3>
+<table><tr><th>Modifier</th><th>Signature</th></tr>
+<tr><td>private</td><td><code>hr.algebra.hockey.rmi.RmiServer()</code></td></tr>
+</table>
+<h3>Fields</h3>
+<table><tr><th>Modifier</th><th>Type</th><th>Name</th></tr>
+<tr><td>private static final</td><td><code>int</code></td><td>RANDOM_PORT_HINT</td></tr>
+</table>
+<h3>Methods</h3>
+<table><tr><th>Modifier</th><th>Return</th><th>Signature</th></tr>
+<tr><td>public static</td><td><code>void</code></td><td><code>main(String[])</code></td></tr>
+</table>
+</section>
+<section>
+<h2>hr.algebra.hockey.utils.ChatUtils</h2>
+<p><strong>Type:</strong> class</p>
+<p><strong>Superclass:</strong> <code>java.lang.Object</code></p>
+<h3>Constructors</h3>
+<table><tr><th>Modifier</th><th>Signature</th></tr>
+<tr><td>private</td><td><code>hr.algebra.hockey.utils.ChatUtils()</code></td></tr>
+</table>
+<h3>Fields</h3>
+<table><tr><th>Modifier</th><th>Type</th><th>Name</th></tr>
+</table>
+<h3>Methods</h3>
+<table><tr><th>Modifier</th><th>Return</th><th>Signature</th></tr>
+<tr><td>public static</td><td><code>List</code></td><td><code>getAllMessages(ChatRemoteService)</code></td></tr>
+<tr><td>public static</td><td><code>Optional</code></td><td><code>initializeChatRemoteService()</code></td></tr>
+<tr><td>public static</td><td><code>void</code></td><td><code>sendChatMessage(ChatRemoteService, PlayerType, String)</code></td></tr>
+</table>
+</section>
+<section>
+<h2>hr.algebra.hockey.utils.DialogUtils</h2>
+<p><strong>Type:</strong> class</p>
+<p><strong>Superclass:</strong> <code>java.lang.Object</code></p>
+<h3>Constructors</h3>
+<table><tr><th>Modifier</th><th>Signature</th></tr>
+<tr><td>private</td><td><code>hr.algebra.hockey.utils.DialogUtils()</code></td></tr>
+</table>
+<h3>Fields</h3>
+<table><tr><th>Modifier</th><th>Type</th><th>Name</th></tr>
+</table>
+<h3>Methods</h3>
+<table><tr><th>Modifier</th><th>Return</th><th>Signature</th></tr>
+<tr><td>private static</td><td><code>void</code></td><td><code>showAlert(AlertType, String, String)</code></td></tr>
+<tr><td>public static</td><td><code>void</code></td><td><code>showError(String, String)</code></td></tr>
+<tr><td>public static</td><td><code>void</code></td><td><code>showInformation(String, String)</code></td></tr>
+</table>
+</section>
+<section>
+<h2>hr.algebra.hockey.utils.FileUtils</h2>
+<p><strong>Type:</strong> class</p>
+<p><strong>Superclass:</strong> <code>java.lang.Object</code></p>
+<h3>Constructors</h3>
+<table><tr><th>Modifier</th><th>Signature</th></tr>
+<tr><td>private</td><td><code>hr.algebra.hockey.utils.FileUtils()</code></td></tr>
+</table>
+<h3>Fields</h3>
+<table><tr><th>Modifier</th><th>Type</th><th>Name</th></tr>
+<tr><td>private static final</td><td><code>String</code></td><td>DEFAULT_GAME_MOVE_HISTORY_FILE</td></tr>
+<tr><td>private static final</td><td><code>String</code></td><td>GAME_MOVE_HISTORY_PROPERTY</td></tr>
+</table>
+<h3>Methods</h3>
+<table><tr><th>Modifier</th><th>Return</th><th>Signature</th></tr>
+<tr><td>public static</td><td><code>Path</code></td><td><code>getGameMoveHistoryPath()</code></td></tr>
+</table>
+</section>
+<section>
+<h2>hr.algebra.hockey.utils.XmlUtils</h2>
+<p><strong>Type:</strong> class</p>
+<p><strong>Superclass:</strong> <code>java.lang.Object</code></p>
+<h3>Constructors</h3>
+<table><tr><th>Modifier</th><th>Signature</th></tr>
+<tr><td>private</td><td><code>hr.algebra.hockey.utils.XmlUtils()</code></td></tr>
+</table>
+<h3>Fields</h3>
+<table><tr><th>Modifier</th><th>Type</th><th>Name</th></tr>
+<tr><td>private static final</td><td><code>String</code></td><td>DTD_FILE_PATH</td></tr>
+<tr><td>private static final</td><td><code>String</code></td><td>XML_FILE_PATH</td></tr>
+<tr><td>private static final</td><td><code>String</code></td><td>XML_RELATIVE_DTD_FILE_PATH</td></tr>
+</table>
+<h3>Methods</h3>
+<table><tr><th>Modifier</th><th>Return</th><th>Signature</th></tr>
+<tr><td>private static</td><td><code>void</code></td><td><code>appendMoveElement(Document, HockeyMove)</code></td></tr>
+<tr><td>private static</td><td><code>Document</code></td><td><code>createDocument()</code></td></tr>
+<tr><td>private static</td><td><code>Node</code></td><td><code>createElement(Document, HockeyMoveTag, String)</code></td></tr>
+<tr><td>private static</td><td><code>void</code></td><td><code>ensureXmlRelativeDtd()</code></td></tr>
+<tr><td>private static</td><td><code>Document</code></td><td><code>loadDocument(String, boolean)</code></td></tr>
+<tr><td>public static</td><td><code>List</code></td><td><code>loadMoves()</code></td></tr>
+<tr><td>private static</td><td><code>List</code></td><td><code>readMoves(Document)</code></td></tr>
+<tr><td>public static</td><td><code>void</code></td><td><code>resetMoveHistory()</code></td></tr>
+<tr><td>private static</td><td><code>void</code></td><td><code>saveDocument(Document)</code></td></tr>
+<tr><td>public static</td><td><code>void</code></td><td><code>saveMove(HockeyMove)</code></td></tr>
+<tr><td>private static</td><td><code>String</code></td><td><code>text(Element, HockeyMoveTag)</code></td></tr>
+</table>
+</section>
+<section>
+<h2>hr.algebra.hockey.utils.DocumentationUtils</h2>
+<p><strong>Type:</strong> class</p>
+<p><strong>Superclass:</strong> <code>java.lang.Object</code></p>
+<h3>Constructors</h3>
+<table><tr><th>Modifier</th><th>Signature</th></tr>
+<tr><td>private</td><td><code>hr.algebra.hockey.utils.DocumentationUtils()</code></td></tr>
+</table>
+<h3>Fields</h3>
+<table><tr><th>Modifier</th><th>Type</th><th>Name</th></tr>
+<tr><td>private static final</td><td><code>Path</code></td><td>DOCUMENTATION_PATH</td></tr>
+<tr><td>private static final</td><td><code>List</code></td><td>DOCUMENTED_CLASSES</td></tr>
+</table>
+<h3>Methods</h3>
+<table><tr><th>Modifier</th><th>Return</th><th>Signature</th></tr>
+<tr><td>private static</td><td><code>void</code></td><td><code>appendClassDocumentation(StringBuilder, Class)</code></td></tr>
+<tr><td>private static</td><td><code>void</code></td><td><code>appendConstructors(StringBuilder, Class)</code></td></tr>
+<tr><td>private static</td><td><code>void</code></td><td><code>appendFields(StringBuilder, Class)</code></td></tr>
+<tr><td>private static</td><td><code>void</code></td><td><code>appendMethods(StringBuilder, Class)</code></td></tr>
+<tr><td>private static</td><td><code>String</code></td><td><code>buildHtml()</code></td></tr>
+<tr><td>private static</td><td><code>String</code></td><td><code>escape(String)</code></td></tr>
+<tr><td>public static</td><td><code>Path</code></td><td><code>generateDocumentation()</code></td></tr>
+<tr><td>private static</td><td><code>String</code></td><td><code>modifiers(int)</code></td></tr>
+<tr><td>private static</td><td><code>String</code></td><td><code>parameterTypes(Class[])</code></td></tr>
+<tr><td>private static</td><td><code>String</code></td><td><code>typeName(Class)</code></td></tr>
+</table>
+</section>
+<section>
+<h2>hr.algebra.hockey.thread.AbstractTheLastHockeyMoveThread</h2>
+<p><strong>Type:</strong> class</p>
+<p><strong>Superclass:</strong> <code>java.lang.Object</code></p>
+<h3>Constructors</h3>
+<table><tr><th>Modifier</th><th>Signature</th></tr>
+<tr><td>public</td><td><code>hr.algebra.hockey.thread.AbstractTheLastHockeyMoveThread()</code></td></tr>
+</table>
+<h3>Fields</h3>
+<table><tr><th>Modifier</th><th>Type</th><th>Name</th></tr>
+<tr><td>private static final</td><td><code>Object</code></td><td>FILE_ACCESS_MONITOR</td></tr>
+<tr><td>private static</td><td><code>boolean</code></td><td>fileAccessInProgress</td></tr>
+</table>
+<h3>Methods</h3>
+<table><tr><th>Modifier</th><th>Return</th><th>Signature</th></tr>
+<tr><td>private</td><td><code>void</code></td><td><code>beginFileAccess()</code></td></tr>
+<tr><td>private</td><td><code>void</code></td><td><code>endFileAccess()</code></td></tr>
+<tr><td>protected</td><td><code>List</code></td><td><code>loadHockeyMoves()</code></td></tr>
+<tr><td>private</td><td><code>List</code></td><td><code>readMovesFromFile()</code></td></tr>
+<tr><td>protected</td><td><code>void</code></td><td><code>saveTheLastHockeyMove(HockeyMove)</code></td></tr>
+</table>
+</section>
+<section>
+<h2>hr.algebra.hockey.thread.SaveTheLastHockeyMoveThread</h2>
+<p><strong>Type:</strong> class</p>
+<p><strong>Superclass:</strong> <code>hr.algebra.hockey.thread.AbstractTheLastHockeyMoveThread</code></p>
+<p><strong>Interfaces:</strong> java.lang.Runnable</p>
+<h3>Constructors</h3>
+<table><tr><th>Modifier</th><th>Signature</th></tr>
+<tr><td>public</td><td><code>hr.algebra.hockey.thread.SaveTheLastHockeyMoveThread(HockeyMove)</code></td></tr>
+</table>
+<h3>Fields</h3>
+<table><tr><th>Modifier</th><th>Type</th><th>Name</th></tr>
+<tr><td>private static final</td><td><code>Logger</code></td><td>LOGGER</td></tr>
+<tr><td>private final</td><td><code>HockeyMove</code></td><td>hockeyMove</td></tr>
+</table>
+<h3>Methods</h3>
+<table><tr><th>Modifier</th><th>Return</th><th>Signature</th></tr>
+<tr><td>public</td><td><code>void</code></td><td><code>run()</code></td></tr>
+</table>
+</section>
+<section>
+<h2>hr.algebra.hockey.thread.ReadTheLastHockeyMoveThread</h2>
+<p><strong>Type:</strong> class</p>
+<p><strong>Superclass:</strong> <code>hr.algebra.hockey.thread.AbstractTheLastHockeyMoveThread</code></p>
+<p><strong>Interfaces:</strong> java.lang.Runnable</p>
+<h3>Constructors</h3>
+<table><tr><th>Modifier</th><th>Signature</th></tr>
+<tr><td>public</td><td><code>hr.algebra.hockey.thread.ReadTheLastHockeyMoveThread(Consumer)</code></td></tr>
+</table>
+<h3>Fields</h3>
+<table><tr><th>Modifier</th><th>Type</th><th>Name</th></tr>
+<tr><td>private static final</td><td><code>Logger</code></td><td>LOGGER</td></tr>
+<tr><td>private final</td><td><code>Consumer</code></td><td>lastMoveConsumer</td></tr>
+</table>
+<h3>Methods</h3>
+<table><tr><th>Modifier</th><th>Return</th><th>Signature</th></tr>
+<tr><td>private</td><td><code>void</code></td><td><code>lambda$run$0(HockeyMove)</code></td></tr>
+<tr><td>public</td><td><code>void</code></td><td><code>run()</code></td></tr>
+</table>
+</section>
+<section>
+<h2>hr.algebra.hockey.thread.AppExecutor</h2>
+<p><strong>Type:</strong> class</p>
+<p><strong>Superclass:</strong> <code>java.lang.Object</code></p>
+<h3>Constructors</h3>
+<table><tr><th>Modifier</th><th>Signature</th></tr>
+<tr><td>private</td><td><code>hr.algebra.hockey.thread.AppExecutor()</code></td></tr>
+</table>
+<h3>Fields</h3>
+<table><tr><th>Modifier</th><th>Type</th><th>Name</th></tr>
+<tr><td>private static final</td><td><code>ExecutorService</code></td><td>EXECUTOR</td></tr>
+<tr><td>private static final</td><td><code>Logger</code></td><td>LOGGER</td></tr>
+</table>
+<h3>Methods</h3>
+<table><tr><th>Modifier</th><th>Return</th><th>Signature</th></tr>
+<tr><td>public static</td><td><code>void</code></td><td><code>execute(Runnable)</code></td></tr>
+<tr><td>public static</td><td><code>ExecutorService</code></td><td><code>getExecutor()</code></td></tr>
+<tr><td>private static</td><td><code>Thread</code></td><td><code>lambda$static$0(Runnable)</code></td></tr>
+<tr><td>public static</td><td><code>void</code></td><td><code>shutdown()</code></td></tr>
+</table>
+</section>
+</body>
+</html>

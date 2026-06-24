@@ -7,6 +7,7 @@ public final class CollisionService {
     private static final double DEFAULT_STOP_THRESHOLD = 0.05;
     private static final double MINIMUM_PUCK_IMPACT_SPEED = 9.0;
     private static final double PUCK_IMPACT_MULTIPLIER = 1.75;
+    private static final double KINEMATIC_COLLISION_RESTITUTION = 0.9;
 
     private CollisionService() {
     }
@@ -45,6 +46,43 @@ public final class CollisionService {
         double minimumDistance = player.getRadius() + puck.getRadius() + 1;
         puck.setX(player.getX() + normalX * minimumDistance);
         puck.setY(player.getY() + normalY * minimumDistance);
+    }
+
+    public static boolean deflectPuckFromKinematicPlayer(
+            Player player,
+            Puck puck,
+            double playerVelocityX,
+            double playerVelocityY) {
+        if (!playerHitsPuck(player, puck)) {
+            return false;
+        }
+
+        double deltaX = puck.getX() - player.getX();
+        double deltaY = puck.getY() - player.getY();
+        double collisionDistance = distance(player.getX(), player.getY(), puck.getX(), puck.getY());
+        if (collisionDistance < 0.001) {
+            deltaX = 1;
+            deltaY = 0;
+            collisionDistance = 1;
+        }
+
+        double normalX = deltaX / collisionDistance;
+        double normalY = deltaY / collisionDistance;
+        double minimumDistance = player.getRadius() + puck.getRadius() + 1;
+        puck.setX(player.getX() + normalX * minimumDistance);
+        puck.setY(player.getY() + normalY * minimumDistance);
+
+        double relativeVelocityX = puck.getVelocityX() - playerVelocityX;
+        double relativeVelocityY = puck.getVelocityY() - playerVelocityY;
+        double velocityAlongNormal = relativeVelocityX * normalX + relativeVelocityY * normalY;
+        if (velocityAlongNormal >= 0) {
+            return false;
+        }
+
+        double impulse = -(1 + KINEMATIC_COLLISION_RESTITUTION) * velocityAlongNormal;
+        puck.setVelocityX(relativeVelocityX + impulse * normalX + playerVelocityX);
+        puck.setVelocityY(relativeVelocityY + impulse * normalY + playerVelocityY);
+        return true;
     }
 
     public static double distance(double firstX, double firstY, double secondX, double secondY) {

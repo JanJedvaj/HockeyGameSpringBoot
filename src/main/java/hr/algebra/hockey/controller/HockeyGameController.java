@@ -1,7 +1,6 @@
 package hr.algebra.hockey.controller;
 
 import hr.algebra.hockey.HockeyGameApplication;
-import hr.algebra.hockey.engine.HockeyGameEngine;
 import hr.algebra.hockey.jndi.ConfigurationKey;
 import hr.algebra.hockey.jndi.ConfigurationReader;
 import hr.algebra.hockey.model.GameState;
@@ -13,10 +12,13 @@ import hr.algebra.hockey.model.PlayerType;
 import hr.algebra.hockey.model.Puck;
 import hr.algebra.hockey.network.SocketMultiplayerService;
 import hr.algebra.hockey.rmi.ChatRemoteService;
+import hr.algebra.hockey.thread.AppExecutor;
+import hr.algebra.hockey.thread.ReadTheLastHockeyMoveThread;
+import hr.algebra.hockey.thread.SaveTheLastHockeyMoveThread;
 import hr.algebra.hockey.utils.ChatUtils;
 import hr.algebra.hockey.utils.DialogUtils;
 import hr.algebra.hockey.utils.DocumentationUtils;
-import hr.algebra.hockey.utils.GameSaveUtils;
+import hr.algebra.hockey.utils.GameUtils;
 import hr.algebra.hockey.utils.XmlUtils;
 import javafx.animation.AnimationTimer;
 import javafx.animation.Animation;
@@ -42,8 +44,11 @@ import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class HockeyGameController {
+    private static final Logger LOGGER = Logger.getLogger(HockeyGameController.class.getName());
     private static final double AIM_ARROW_LENGTH = 54;
     private static final double AIM_ARROW_HEAD_LENGTH = 12;
     private static final double AIM_ARROW_HEAD_WIDTH = 8;
@@ -70,7 +75,7 @@ public class HockeyGameController {
     @FXML private TextField chatInputField;
     @FXML private Button sendChatButton;
 
-    private final HockeyGameEngine engine = new HockeyGameEngine(HockeyGameApplication.getLoggedInPlayerType());
+    private final GameUtils engine = new GameUtils(HockeyGameApplication.getLoggedInPlayerType());
     private final Line aimArrowLine = new Line();
     private final Polygon aimArrowHead = new Polygon();
     private AnimationTimer gameLoop;
@@ -86,6 +91,7 @@ public class HockeyGameController {
 
     @FXML
     private void initialize() {
+        LOGGER.info("Initializing hockey game controller for " + HockeyGameApplication.getLoggedInPlayerType());
         configureAimArrow();
         configureKeyboardInput();
         configureGameLoop();
@@ -93,6 +99,7 @@ public class HockeyGameController {
         showConfigurationInfo();
         configureMultiplayer();
         configureRmiChat();
+        readLastBinaryMove();
         drawGameState();
         updateStatusLabel();
     }
@@ -212,6 +219,8 @@ public class HockeyGameController {
         if (multiplayerService != null) {
             multiplayerService.close();
         }
+        AppExecutor.shutdown();
+        LOGGER.info("Hockey game controller shut down.");
     }
 
     @FXML
@@ -235,7 +244,7 @@ public class HockeyGameController {
     @FXML
     private void onSaveGame(ActionEvent event) {
         try {
-            GameSaveUtils.saveGame(engine.getGameState());
+            GameUtils.saveGame(engine.getGameState());
             statusLabel.setText("Game saved to game/save.dat.");
             DialogUtils.showInformation("Game Saved", "The current game was saved to game/save.dat.");
             rinkPane.requestFocus();
@@ -253,11 +262,11 @@ public class HockeyGameController {
         }
 
         try {
-            if (!GameSaveUtils.saveGameExists()) {
+            if (!GameUtils.saveGameExists()) {
                 statusLabel.setText("No saved game found at game/save.dat.");
                 return;
             }
-            engine.loadGameState(GameSaveUtils.loadGame());
+            engine.loadGameState(GameUtils.loadGame());
             gameOverDialogShown = false;
             lastTimerTick = 0;
             drawGameState();
@@ -339,7 +348,9 @@ public class HockeyGameController {
 
         sendChatButton.setDisable(true);
         PlayerType sender = engine.getGameState().getLocalPlayerType();
-        CompletableFuture.runAsync(() -> ChatUtils.sendChatMessage(service, sender, message))
+        CompletableFuture.runAsync(
+                        () -> ChatUtils.sendChatMessage(service, sender, message),
+                        AppExecutor.getExecutor())
                 .whenComplete((unused, exception) -> Platform.runLater(() -> {
                     if (exception != null) {
                         chatRemoteService = null;
@@ -382,7 +393,7 @@ public class HockeyGameController {
                 chatRemoteService = service;
             }
             return service == null ? null : ChatUtils.getAllMessages(service);
-        }).whenComplete((messages, exception) -> Platform.runLater(() -> {
+        }, AppExecutor.getExecutor()).whenComplete((messages, exception) -> Platform.runLater(() -> {
             chatRefreshInProgress.set(false);
             if (exception != null || messages == null) {
                 chatRemoteService = null;
@@ -416,9 +427,17 @@ public class HockeyGameController {
     private void saveMoveEvent(HockeyMove hockeyMove) {
         try {
             XmlUtils.saveMove(hockeyMove);
+            AppExecutor.execute(new SaveTheLastHockeyMoveThread(hockeyMove));
         } catch (Exception exception) {
+            LOGGER.log(Level.SEVERE, "Move event could not be saved", exception);
             statusLabel.setText("XML save failed: " + exception.getMessage());
         }
+    }
+
+    private void readLastBinaryMove() {
+        AppExecutor.execute(new ReadTheLastHockeyMoveThread(hockeyMove ->
+                chatTextArea.appendText("Last saved move: " + hockeyMove.getMoveType()
+                        + " by " + playerName(hockeyMove.getPlayerType()) + System.lineSeparator())));
     }
 
     private void startReplay() {

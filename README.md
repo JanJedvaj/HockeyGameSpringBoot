@@ -20,7 +20,7 @@ The game supports single-player gameplay, turn-based socket multiplayer, RMI cha
 - The puck bounces from rink walls and can enter either goal.
 - The first player to reach the winning score wins, or the score leader wins when time expires.
 
-In single-player mode, only the left player launches. The opponent is a deterministic vertical patrol obstacle and does not use AI.
+In single-player mode, only the left player launches. The opponent is a deterministic vertical patrol obstacle and does not use AI. The puck physically deflects from the opponent, while the two player paddles do not collide with each other.
 
 ## IntelliJ Run Configurations
 
@@ -72,13 +72,14 @@ rmi.server.port=1099
 ```text
 hr.algebra.hockey
   controller/   JavaFX controller
-  engine/       game loop, physics, collisions, scoring
+  engine/       reusable collision calculations
   exception/    application exceptions
   jndi/         external configuration reader
   model/        serializable game models and XML move models
   network/      socket multiplayer messages and service
   rmi/          remote chat interface, implementation, and server
-  utils/        serialization, XML, chat, dialogs, documentation
+  thread/       AppExecutor and synchronized binary move-history workers
+  utils/        GameUtils rules, serialization, XML, chat, dialogs, documentation
 ```
 
 The JavaFX layout is located at:
@@ -96,14 +97,21 @@ Its reusable JavaFX styles are in `style.css` in the same directory.
 | JavaFX MVC and FXML | `HockeyGameApplication`, `HockeyGameController`, `hello-view.fxml` |
 | Scene Builder layout | `hello-view.fxml` |
 | Game model hierarchy | `GameState`, `Player`, `Puck`, enums |
-| Threads and asynchronous work | socket service threads, asynchronous RMI chat calls |
-| Serialization | `GameSaveUtils` and serializable `GameState` |
+| Game rules | `GameUtils` owns game state, physics flow, scoring and save/load |
+| Threads and synchronization | `AppExecutor`, socket threads, `wait/notifyAll` move-history workers |
+| Serialization | `GameUtils` serializes `GameState`; thread workers serialize move history |
 | Reflection API | `DocumentationUtils` |
 | Socket networking | `SocketMultiplayerService`, `MultiplayerMessage` |
 | JNDI/configuration | `ConfigurationReader`, `ConfigurationKey`, `conf/app.conf` |
 | RMI | `ChatRemoteService`, `ChatRemoteServiceImpl`, `RmiServer` |
 | XML DOM and DTD | `XmlUtils`, `HockeyMove`, `dtd/gameMoves.dtd` |
 | Replay | JavaFX `Timeline` replay in `HockeyGameController` |
+| Lombok | generated model accessors and thread constructors |
+| Logging | `java.util.logging` lifecycle, socket, persistence and error events |
+
+## Why Hockey Sockets Differ From The References
+
+Kaladont and TicTacToe can open a short socket connection for each discrete move. Hockey physics changes continuously, so `PLAYER_1` keeps one TCP connection open, calculates the authoritative state and sends serialized snapshots through a bounded `BlockingQueue`. `PLAYER_2` sends a launch request through the same connection. This uses the same `ServerSocket`, `Socket`, object-stream and background-thread concepts without allowing two simulations to drift apart.
 
 ## Build and Tests
 
@@ -119,7 +127,7 @@ Run a clean verification build:
 .\mvnw.cmd clean test
 ```
 
-The regression suite covers single-player turn ownership, multiplayer turn switching, timer completion, deep network snapshot isolation, and a real JNDI file-context configuration lookup.
+The nine regression tests cover gameplay rules, opponent-puck physics, ignored player-player contact, deep network snapshot isolation, real JNDI configuration, binary move-history serialization and concurrent writers.
 
 ## Current Limitations
 

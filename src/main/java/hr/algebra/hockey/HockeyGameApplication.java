@@ -10,8 +10,10 @@ import javafx.stage.Stage;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.logging.Logger;
 
 public class HockeyGameApplication extends Application {
+    private static final Logger LOGGER = Logger.getLogger(HockeyGameApplication.class.getName());
     private static PlayerType loggedInPlayerType = PlayerType.SINGLE_PLAYER;
 
     @Override
@@ -28,6 +30,7 @@ public class HockeyGameApplication extends Application {
         stage.setMinHeight(680);
         stage.setOnCloseRequest(event -> controller.shutdown());
         stage.show();
+        LOGGER.info("Hockey game window started in " + loggedInPlayerType + " mode.");
     }
 
     public static PlayerType getLoggedInPlayerType() {

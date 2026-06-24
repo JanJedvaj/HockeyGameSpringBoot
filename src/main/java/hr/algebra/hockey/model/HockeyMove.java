@@ -1,9 +1,14 @@
 package hr.algebra.hockey.model;
 
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
 import java.io.Serial;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 
+@Data
+@NoArgsConstructor
 public class HockeyMove implements Serializable {
     @Serial
     private static final long serialVersionUID = 1L;
@@ -21,9 +26,6 @@ public class HockeyMove implements Serializable {
     private double puckY;
     private int timeLeft;
 
-    public HockeyMove() {
-    }
-
     public HockeyMove(HockeyMoveType moveType, PlayerType playerType, GameState gameState) {
         this.moveType = moveType;
         this.playerType = playerType;
@@ -39,99 +41,4 @@ public class HockeyMove implements Serializable {
         this.timeLeft = gameState.getTimeLeft();
     }
 
-    public HockeyMoveType getMoveType() {
-        return moveType;
-    }
-
-    public void setMoveType(HockeyMoveType moveType) {
-        this.moveType = moveType;
-    }
-
-    public PlayerType getPlayerType() {
-        return playerType;
-    }
-
-    public void setPlayerType(PlayerType playerType) {
-        this.playerType = playerType;
-    }
-
-    public LocalDateTime getTimestamp() {
-        return timestamp;
-    }
-
-    public void setTimestamp(LocalDateTime timestamp) {
-        this.timestamp = timestamp;
-    }
-
-    public int getPlayerOneScore() {
-        return playerOneScore;
-    }
-
-    public void setPlayerOneScore(int playerOneScore) {
-        this.playerOneScore = playerOneScore;
-    }
-
-    public int getPlayerTwoScore() {
-        return playerTwoScore;
-    }
-
-    public void setPlayerTwoScore(int playerTwoScore) {
-        this.playerTwoScore = playerTwoScore;
-    }
-
-    public double getPlayerOneX() {
-        return playerOneX;
-    }
-
-    public void setPlayerOneX(double playerOneX) {
-        this.playerOneX = playerOneX;
-    }
-
-    public double getPlayerOneY() {
-        return playerOneY;
-    }
-
-    public void setPlayerOneY(double playerOneY) {
-        this.playerOneY = playerOneY;
-    }
-
-    public double getPlayerTwoX() {
-        return playerTwoX;
-    }
-
-    public void setPlayerTwoX(double playerTwoX) {
-        this.playerTwoX = playerTwoX;
-    }
-
-    public double getPlayerTwoY() {
-        return playerTwoY;
-    }
-
-    public void setPlayerTwoY(double playerTwoY) {
-        this.playerTwoY = playerTwoY;
-    }
-
-    public double getPuckX() {
-        return puckX;
-    }
-
-    public void setPuckX(double puckX) {
-        this.puckX = puckX;
-    }
-
-    public double getPuckY() {
-        return puckY;
-    }
-
-    public void setPuckY(double puckY) {
-        this.puckY = puckY;
-    }
-
-    public int getTimeLeft() {
-        return timeLeft;
-    }
-
-    public void setTimeLeft(int timeLeft) {
-        this.timeLeft = timeLeft;
-    }
 }
